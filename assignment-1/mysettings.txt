@@ -1,0 +1,13 @@
+Scenario.name = MyScenario
+Scenario.endTime = 600
+Scenario.updateInterval = 0.1
+Scenario.simulateConnections = false
+Scenario.nrofHostGroups = 1
+MovementModel.worldSize = 100,100
+Report.nrofReports = 0
+Events.nrof = 0
+Group1.groupID = x
+Group1.nrofHosts = 1
+Group1.nrofInterfaces = 0
+Group1.movementModel = RandomWaypoint
+Group1.router = PassiveRouter
