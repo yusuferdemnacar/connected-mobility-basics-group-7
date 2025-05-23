@@ -4,7 +4,7 @@ Scenario.name = MapRouteMovement
 Scenario.endTime = 6000
 Scenario.updateInterval = 0.1
 Scenario.simulateConnections = false
-MovementModel.worldSize = 100,100
+MovementModel.worldSize = 1000,1000
 Events.nrof = 0
 
 # Communication Interface
@@ -19,12 +19,15 @@ Group1.groupID = x
 Group1.nrofHosts = 100
 Group1.nrofInterfaces = 1
 Group1.interface1 = myInterface
-Group1.movementModel = RandomWaypoint
+Group1.movementModel = MapBasedMovement
+Group1.routeFile = data/TUM/fmi-converted-route.wkt
+
+Group1.routeType = 1
 Group1.router = PassiveRouter
 
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 1
-MapBasedMovement.mapFile1 = data/TUM/fmi.wkt
+MapBasedMovement.mapFile1 = data/TUM/fmi-converted.wkt
 
 # Reports
 Report.nrofReports = 1
