@@ -20,14 +20,15 @@ Group1.nrofHosts = 100
 Group1.nrofInterfaces = 1
 Group1.interface1 = myInterface
 Group1.movementModel = MapBasedMovement
-Group1.routeFile = data/TUM/fmi-converted-route.wkt
+Group1.routeFile = data/TUM/fmi.osm.wkt
 
 Group1.routeType = 1
 Group1.router = PassiveRouter
 
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 1
-MapBasedMovement.mapFile1 = data/TUM/fmi-converted.wkt
+MapBasedMovement.mapFile1 = data/TUM/fmi.osm.wkt
+#MapBasedMovement.mapFile2 = data/TUM/fmi.osm.wkt
 
 # Reports
 Report.nrofReports = 1
