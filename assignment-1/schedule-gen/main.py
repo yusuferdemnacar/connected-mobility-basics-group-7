@@ -26,7 +26,6 @@ if __name__ == "__main__":
 
     rooms = Room.create_rooms(input_dir, room_names)
     Room.draw_map(rooms, input_dir / "corridor.wkt", output_path=data_dir / "rooms.png", image_width=1000, image_height=1000, scale=10)
-    Room.generate_room_settings(rooms)
     main_schedule = Schedule(rooms)
     main_schedule.populate(4)
 

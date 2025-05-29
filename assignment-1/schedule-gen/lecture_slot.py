@@ -1,7 +1,8 @@
 import datetime
+from room import Room
 
 class LectureSlot:
-    def __init__(self, room: str, start_time: datetime.time, end_time: datetime.time):
+    def __init__(self, room: Room, start_time: datetime.time, end_time: datetime.time):
         self.room = room
         self.start_time = start_time
         self.end_time = end_time
