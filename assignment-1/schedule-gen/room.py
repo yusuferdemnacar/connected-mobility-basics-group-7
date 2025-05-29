@@ -9,7 +9,7 @@ class Room:
         self.door_outside_x, self.door_outside_y = door_outside_x, door_outside_y
 
     def __repr__(self):        
-        return f"Room({self.name}, Points: ({self.points})"
+        return f"Room({self.name}, Points: ({self.points}))"
     
     @staticmethod
     def create_rooms(file_path: Path, room_names: list):

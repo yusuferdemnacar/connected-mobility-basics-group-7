@@ -35,6 +35,7 @@ class Schedule:
             return True
         else:
             print(f"Slot {target_lecture_slot} is already occupied by course {self.schedule[target_lecture_slot].id}")
+            return False
 
     def populate(self, num_courses: int) -> None:
         """
