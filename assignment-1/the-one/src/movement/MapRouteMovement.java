@@ -19,8 +19,7 @@ import core.Settings;
  * way to next waypoint using {@link DijkstraPathFinder}. There can be
  * different type of routes; see {@link #ROUTE_TYPE_S}.
  */
-public class MapRouteMovement extends MapBasedMovement implements
-	SwitchableMovement {
+public class MapRouteMovement extends MapBasedMovement {
 
 	/** Per node group setting used for selecting a route file ({@value}) */
 	public static final String ROUTE_FILE_S = "routeFile";
@@ -142,7 +141,6 @@ public class MapRouteMovement extends MapBasedMovement implements
 			return null;
 		}
 	}
-
 
 	@Override
 	public MapRouteMovement replicate() {
