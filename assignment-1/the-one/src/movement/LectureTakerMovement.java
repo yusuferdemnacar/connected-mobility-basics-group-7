@@ -76,15 +76,21 @@ public class LectureTakerMovement extends ExtendedMovementModel {
             List<Coord> coords = new ArrayList<>();
             try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(filePath))) {
                 String line;
+                int lineNumber = 0;
                 while ((line = reader.readLine()) != null) {
+                    if (lineNumber < 2) {
+                        lineNumber++;
+                        continue; // Skip the first two lines
+                    }
                     String[] parts = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split("\\s+");
                     double x = Double.parseDouble(parts[0]);
                     double y = Double.parseDouble(parts[1]);
-                    // Round coordinates to 3 decimal places
-                    // full precision causes bugs in the ray casting algorithm
                     x = Math.round(x * 1000.0) / 1000.0;
                     y = Math.round(y * 1000.0) / 1000.0;
                     coords.add(new Coord(x, y));
+                }
+                if (!coords.isEmpty()) {
+                    coords.add(coords.get(0).clone());
                 }
             } catch (java.io.IOException e) {
                 System.err.println("Error reading WKT file: " + filePath + ". " + e.getMessage());
@@ -121,6 +127,8 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         this.initialGlobalEntrance = new Coord(initialX, initialY);
 
         this.stationaryPhaseDuration = ltmSettings.getDouble(STATIONARY_DURATION_SETTING, 5.0);
+
+        this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
 
     }
 
@@ -160,8 +168,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
     @Override
     public boolean newOrders() {
         if (this.isFirstOrder) {
-            this.roomSequence = Room
-                    .getRoomSequence("data/group-data/" + this.getHost().groupId + "_room_sequence.txt");
+            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_room_sequence.txt");
 
             for (int i = 0; i < roomSequence.size(); i++) {
                 String roomName = roomSequence.get(i);
@@ -170,17 +177,10 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                     Room room = new Room(filePath, roomName);
                     rooms.put(roomName, room);
                 }
-
-            }
-
-            if (!rooms.isEmpty()) {
+                
                 this.currentRoom = null;
                 this.nextRoom = rooms.get(roomSequence.get(0));
-            } else {
-                System.out.println("LectureTakerMovement: No rooms defined, initializing with default values.");
-                this.currentRoom = null; // No rooms defined
-                this.nextRoom = null; // No next room
-                this.currentMovementMode = -1; // Invalid movement mode
+
             }
             this.isFirstOrder = false; // Set to false after first order
         }
@@ -195,19 +195,16 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 return true;
             }
             if (this.mapRouteMM.isReady()) {
-                System.out.println(
-                        this.getHost().toString() + ": Choosing random waypoint in room " + this.nextRoom.name);
-                this.currentRoom = nextRoom; // Update current room
-                if (this.lectureSlot >= 0 && this.lectureSlot < this.roomSequence.size()) {
-                    this.nextRoom = this.rooms.get(
-                            this.roomSequence.get(this.lectureSlot));
-                } else {
-                    this.nextRoom = null;
-                }
+                this.currentRoom = this.nextRoom;
                 this.randomWaypointMM.setPolygon(currentRoom.polygon);
                 this.randomWaypointMM.setLocation(getCurrentMovementModel().getLastLocation());
                 setCurrentMovementModel(randomWaypointMM);
                 this.currentMovementMode = RANDOM_WALK_IN_CURRENT_ROOM_MODE;
+                if (this.lectureSlot >= 0 && this.lectureSlot < this.roomSequence.size()) {
+                    this.nextRoom = this.rooms.get(this.roomSequence.get(this.lectureSlot));
+                } else {
+                    this.nextRoom = null;
+                }
             }
         } else if (this.currentMovementMode == RANDOM_WALK_IN_CURRENT_ROOM_MODE) {
             if (this.randomWaypointMM.isReady()) {
