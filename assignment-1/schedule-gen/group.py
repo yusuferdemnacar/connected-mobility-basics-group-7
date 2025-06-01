@@ -7,6 +7,7 @@ class Group:
         self.courses = courses
 
     def generate_route_file(self, file_path: Path, initial_x: float, initial_y: float):
+        file_path.mkdir(parents=True, exist_ok=True)
         with open(file_path / f"group{self.id}_route.wkt", "w") as file:
             file.write("LINESTRING (")
             self.courses.sort(key=lambda x: x.lecture_slot.start_time)
@@ -16,6 +17,7 @@ class Group:
 
     def generate_room_sequence_file(self, file_path: Path):
         self.courses.sort(key=lambda x: x.lecture_slot.start_time)
+        file_path.mkdir(parents=True, exist_ok=True)
         with open(file_path / f"group{self.id}_room_sequence.txt", "w") as file:
             for course in self.courses:
                 file.write(f"{course.lecture_slot.room.name}\n")
