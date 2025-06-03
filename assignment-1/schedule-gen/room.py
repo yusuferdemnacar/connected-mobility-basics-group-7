@@ -12,11 +12,21 @@ class Room:
         return f"Room({self.name}, Points: ({self.points}))"
     
     @staticmethod
+    def get_room_names(file_path: Path) -> list:
+        try:
+            room_names = [file.stem for file in file_path.glob("*.wkt")]
+            if not room_names:
+                print(f"No room files found in {file_path}.")
+            return [name for name in room_names if name != "corridor"]
+        except Exception as e:
+            print(f"Error reading room names from {file_path}: {e}")
+            return
+    
+    @staticmethod
     def create_rooms(file_path: Path, room_names: list):
-        rooms = []
+        rooms = {}
         for room_name in room_names:
             try:
-                print(file_path / f"{room_name}.wkt")
                 with open(file_path / f"{room_name}.wkt", 'r') as file:
                     points = []
                     reader = file.readlines()
@@ -30,7 +40,7 @@ class Room:
                         print(f"Room {room_name} has less than 3 points, skipping.")
                         continue
                     room = Room(room_name, points, inside_door_x, inside_door_y, outside_door_x, outside_door_y)
-                    rooms.append(room)
+                    rooms[room_name] = room
             except FileNotFoundError:
                 print(f"File {file_path} not found. Please check the path.")
                 return []
@@ -42,9 +52,10 @@ class Room:
     @staticmethod
     def generate_room_settings(rooms) -> list:
         lines = []
-        for room in rooms:
+        lines.append("\n")
+        for room in rooms.values():
             lines.append(f"LectureTakerMovement.{room.name}.file = ../data/{room.name}.wkt\n")
-            
+        lines.append("\n")
         return lines
     
     @staticmethod
@@ -57,7 +68,7 @@ class Room:
         img = Image.new("RGB", (image_width, image_height), background_color)
         draw = ImageDraw.Draw(img)
 
-        for room in rooms:
+        for room in rooms.values():
             draw.polygon(
                 [(x * scale, y * scale) for x, y in room.points],
                 outline=line_color,
