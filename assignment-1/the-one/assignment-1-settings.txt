@@ -10,13 +10,37 @@ btInterface.type = SimpleBroadcastInterface
 btInterface.transmitSpeed = 250k
 btInterface.transmitRange = 10
 
+## Global Movement Model settings
+# World's size must encompass the room defined for LectureTakerMovement
+MovementModel.worldSize = 1000, 1000
+MovementModel.warmup = 0
+# MovementModel.rngSeed = 1
+
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 1
 MapBasedMovement.mapFile1 = ../data/corridor.wkt
 MapBasedMovement.rwpInvert = true
 
+## LectureTakerMovement settings (start)
+
+LectureTakerMovement.initialX = 290
+LectureTakerMovement.initialY = 160
+LectureTakerMovement.lecturePeriodDuration = 7200
+
+## LectureTakerMovement settings (end)
+
+## Room settings (start)
+
+LectureTakerMovement.mi-2.file = ../data/mi-2.wkt
+LectureTakerMovement.mi-3.file = ../data/mi-3.wkt
+LectureTakerMovement.magistrale.file = ../data/magistrale.wkt
+
+## Room settings (end)
+
 ## Group settings (start)
+
 Scenario.nrofHostGroups = 5
+
 # Group1 settings
 Group1.groupID = group1
 Group1.nrofHosts = 3
@@ -30,6 +54,7 @@ Group1.speed = 0.5, 1.5
 Group1.nrofInterfaces = 1
 Group1.interface1 = btInterface
 Group1.msgTtl = 300
+
 # Group2 settings
 Group2.groupID = group2
 Group2.nrofHosts = 3
@@ -43,6 +68,7 @@ Group2.speed = 0.5, 1.5
 Group2.nrofInterfaces = 1
 Group2.interface1 = btInterface
 Group2.msgTtl = 300
+
 # Group3 settings
 Group3.groupID = group3
 Group3.nrofHosts = 3
@@ -56,6 +82,7 @@ Group3.speed = 0.5, 1.5
 Group3.nrofInterfaces = 1
 Group3.interface1 = btInterface
 Group3.msgTtl = 300
+
 # Group4 settings
 Group4.groupID = group4
 Group4.nrofHosts = 3
@@ -69,6 +96,7 @@ Group4.speed = 0.5, 1.5
 Group4.nrofInterfaces = 1
 Group4.interface1 = btInterface
 Group4.msgTtl = 300
+
 # Group5 settings
 Group5.groupID = group5
 Group5.nrofHosts = 3
@@ -82,26 +110,8 @@ Group5.speed = 0.5, 1.5
 Group5.nrofInterfaces = 1
 Group5.interface1 = btInterface
 Group5.msgTtl = 300
+
 ## Group settings (end)
-
-## LectureTakerMovement specific settings:
-LectureTakerMovement.nrofRooms = 3
-LectureTakerMovement.initialX = 110.0
-LectureTakerMovement.initialY = 110.0
-LectureTakerMovement.randomWalkDuration = 10
-LectureTakerMovement.stationaryDuration = 1000
-
-## Room settings (start)
-LectureTakerMovement.mi-2.file = ../data/mi-2.wkt
-LectureTakerMovement.mi-3.file = ../data/mi-3.wkt
-LectureTakerMovement.magistrale.file = ../data/magistrale.wkt
-## Room settings (end)
-
-## Global Movement Model settings
-# World's size must encompass the room defined for LectureTakerMovement
-MovementModel.worldSize = 1000, 1000
-MovementModel.warmup = 0
-# MovementModel.rngSeed = 1
 
 ## Message creation parameters (Optional - if you want messages)
 Events.nrof = 0
