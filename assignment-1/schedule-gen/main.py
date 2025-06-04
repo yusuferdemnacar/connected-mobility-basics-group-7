@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # TODO: Check this value
     parser.add_argument("--nrof-courses", type=int, default=5, help="Number of courses to be generated. Cannot be larger than the number of rooms * 5. Default is 5.")
     parser.add_argument("--nrof-lt-groups", type=int, default=5, help="Number of lecture taker groups to be generated. Default is 5.")
-    parser.add_argument("--nrof-hosts-per-group", type=int, default=3, help="Number of students per lecture taker group. Default is 3.")
+    parser.add_argument("--nrof-hosts-per-lt-group", type=int, default=3, help="Number of students per lecture taker group. Default is 3.")
 
     args = parser.parse_args()
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     settings_file = Path(args.settings_file_path)
     nrof_courses = args.nrof_courses
     number_of_lt_groups = args.nrof_lt_groups
-    nrof_hosts_per_lt_group = args.nrof_hosts_per_lt_group_per_group
+    nrof_hosts_per_lt_group = args.nrof_hosts_per_lt_group
 
     # TODO: Handle missing directories
 
