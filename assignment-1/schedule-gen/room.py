@@ -59,8 +59,7 @@ class Room:
         return lines
     
     @staticmethod
-    def draw_map(rooms, corridor_file, output_path="rooms.png", image_width=1000, image_height=1000, scale=1.0,
-                   line_color="black", line_width=0.5, background_color="white"):
+    def draw_map(rooms, corridor_file, output_path="rooms.png", image_width=1000, image_height=1000, scale=1.0, line_color="black", line_width=0.5, background_color="white"):
         
         image_width = max(1, image_width * scale)
         image_height = max(1, image_height * scale)
