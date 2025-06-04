@@ -8,7 +8,7 @@ from lecture_slot import LectureSlot
 import random
 
 class Schedule:
-    def __init__(self, rooms: list[Room]):
+    def __init__(self, rooms: dict[str, Room]) -> None:
         self.start_time = datetime.time(8, 0)
         self.end_time = datetime.time(18, 0)
         self.rooms = rooms
