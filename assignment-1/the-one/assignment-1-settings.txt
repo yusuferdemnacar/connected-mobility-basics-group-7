@@ -18,7 +18,7 @@ MovementModel.warmup = 0
 
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 1
-MapBasedMovement.mapFile1 = ../data/corridor.wkt
+MapBasedMovement.mapFile1 = ./data/fmi-map/corridor.wkt
 MapBasedMovement.rwpInvert = true
 
 ## LectureTakerMovement settings (start)
