@@ -44,3 +44,17 @@ class Settings:
         except FileNotFoundError:
             print(f"File {self.file_path} not found. Please check the path.")
             return 0, 0
+        
+    def get_world_size(self) -> tuple:
+        world_size_x, world_size_y = 0.0, 0.0
+        try:
+            with open(self.file_path, 'r') as file:
+                lines = file.readlines()
+                for line in lines:
+                    if line.startswith("MovementModel.worldSize = "):
+                        world_size_x, world_size_y = map(float, line.split('=')[1].strip().split(','))
+            return world_size_x, world_size_y
+        except FileNotFoundError:
+            print(f"File {self.file_path} not found. Please check the path.")
+            return 0, 0
+                
