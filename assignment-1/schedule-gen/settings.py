@@ -52,7 +52,7 @@ class Settings:
                 lines = file.readlines()
                 for line in lines:
                     if line.startswith("MovementModel.worldSize = "):
-                        world_size_x, world_size_y = map(float, line.split('=')[1].strip().split(','))
+                        world_size_x, world_size_y = map(int, line.split('=')[1].strip().split(','))
             return world_size_x, world_size_y
         except FileNotFoundError:
             print(f"File {self.file_path} not found. Please check the path.")

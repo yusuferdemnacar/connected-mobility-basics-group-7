@@ -36,7 +36,7 @@ if __name__ == "__main__":
     room_names = Room.get_room_names(map_dir)
 
     rooms = Room.create_rooms(map_dir, room_names)
-    Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10.0)
+    Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10)
     main_schedule = Schedule(rooms)
     main_schedule.populate(nrof_courses)
 
