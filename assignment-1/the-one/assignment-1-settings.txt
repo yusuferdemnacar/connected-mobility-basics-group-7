@@ -31,9 +31,9 @@ LectureTakerMovement.lecturePeriodDuration = 7200
 
 ## Room settings (start)
 
-LectureTakerMovement.mi-2.file = ../data/mi-2.wkt
-LectureTakerMovement.mi-3.file = ../data/mi-3.wkt
-LectureTakerMovement.magistrale.file = ../data/magistrale.wkt
+LectureTakerMovement.mi-2.file = data/fmi-map/mi-2.wkt
+LectureTakerMovement.mi-3.file = data/fmi-map/mi-3.wkt
+LectureTakerMovement.magistrale.file = data/fmi-map/magistrale.wkt
 
 ## Room settings (end)
 
