@@ -43,7 +43,7 @@ class Group:
 
     # TODO: make all settings configurable
     @staticmethod
-    def generate_group_settings(groups: list) -> list:
+    def generate_group_settings(groups: list, group_data_dir: Path) -> list:
         lines = []
         lines.append(f"\nScenario.nrofHostGroups = {len(groups)}\n\n")
         for group in groups:
@@ -51,7 +51,7 @@ class Group:
             lines.append(f"Group{group.id}.groupID = group{group.id}\n")
             lines.append(f"Group{group.id}.nrofHosts = {group.nrof_hosts}\n")
             lines.append(f"Group{group.id}.movementModel = LectureTakerMovement\n")
-            lines.append(f"Group{group.id}.routeFile = data/group-data/group{group.id}_route.wkt\n")
+            lines.append(f"Group{group.id}.routeFile = {group_data_dir}/group{group.id}_route.wkt\n")
             lines.append(f"Group{group.id}.routeType = 1\n")
             lines.append(f"Group{group.id}.routeFirstStop = 0\n")
             lines.append(f"Group{group.id}.router = EpidemicRouter\n")

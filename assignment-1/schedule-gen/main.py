@@ -52,8 +52,8 @@ if __name__ == "__main__":
         group.generate_route_file(data_dir / "group-data", initial_x, initial_y)
         group.generate_room_sequence_file(data_dir / "group-data")
 
-    settings.insert_group_settings(groups)
-    settings.insert_room_settings(rooms)
+    settings.insert_group_settings(groups, data_dir / "group-data")
+    settings.insert_room_settings(rooms, map_dir)
 
     # main_schedule.visualize()
     # Group.visualize(groups)

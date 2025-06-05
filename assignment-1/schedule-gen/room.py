@@ -50,11 +50,11 @@ class Room:
         return rooms
     
     @staticmethod
-    def generate_room_settings(rooms) -> list:
+    def generate_room_settings(rooms:list , rooms_dir: Path):
         lines = []
         lines.append("\n")
         for room in rooms.values():
-            lines.append(f"LectureTakerMovement.{room.name}.file = ../data/{room.name}.wkt\n")
+            lines.append(f"LectureTakerMovement.{room.name}.file = {rooms_dir}/{room.name}.wkt\n")
         lines.append("\n")
         return lines
     
