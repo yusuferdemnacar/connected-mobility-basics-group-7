@@ -14,6 +14,8 @@ public class LectureTakerMovement extends ExtendedMovementModel {
 
     public static final String INITIAL_X = "initialX";
     public static final String INITIAL_Y = "initialY";
+    public static final String START_TIME = "startTime";
+    public static final String END_TIME = "endTime";
     // New settings keys for durations
     public static final String LECTURE_PERIOD_DURATION_SETTING = "lecturePeriodDuration";
 
@@ -22,17 +24,17 @@ public class LectureTakerMovement extends ExtendedMovementModel {
     private ArrayList<String> roomSequence;
     private HashMap<String, Room> rooms = new HashMap<>();
 
-    private Coord initialGlobalEntrance; // Entrance coordinate for the first room
-    private Room currentRoom; // Current room the lecture taker is in
-    private Room nextRoom; // Next room to move to
+    private Coord initialGlobalEntrance;
+    private Room currentRoom;
+    private Room nextRoom;
     private int lectureSlot;
 
-    private int currentMovementMode; // Current movement mode
+    private int currentMovementMode;
     private double lecturePeriodDuration;
 
     // Sub-models
     private SwitchableStationaryMovement stationaryMM;
-    private SwitchableProhibitedPolygonRwp randomWaypointMM; // Random waypoint movement model
+    private SwitchableProhibitedPolygonRwp randomWaypointMM;
     private MapRouteMovement mapRouteMM;
 
     private static final int START_MODE = -1;
@@ -77,7 +79,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 while ((line = reader.readLine()) != null) {
                     if (lineNumber < 2) {
                         lineNumber++;
-                        continue; // Skip the first two lines
+                        continue;
                     }
                     String[] parts = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split("\\s+");
                     double x = Double.parseDouble(parts[0]);
@@ -89,11 +91,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 if (!coords.isEmpty()) {
                     coords.add(coords.get(0).clone());
                 }
-            } catch (java.io.IOException e) {
-                System.err.println("Error reading WKT file: " + filePath + ". " + e.getMessage());
-                // Return an empty list or handle the error as appropriate
-                return new ArrayList<>();
-            } catch (Exception e) { // Catch other potential parsing errors if format isn't perfect
+            } catch (Exception e) {
                 System.err.println("Error parsing WKT file: " + filePath + ". " + e.getMessage());
                 return new ArrayList<>();
             }
@@ -161,12 +159,11 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         return initialGlobalEntrance.clone();
     }
 
+    
+
     @Override
     public boolean newOrders() {
         if (this.currentMovementMode == START_MODE) {
-            if (this.getHost().toString().equals("group38")) {
-            System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting stationary in initial location: " + this.initialGlobalEntrance.toString());
-            }
             this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_room_sequence.txt");
 
             for (int i = 0; i < roomSequence.size(); i++) {
@@ -187,17 +184,12 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         } else if (this.currentMovementMode == MOVE_TO_NEXT_ROOM_DOOR_MODE) {
 
             if (this.nextRoom == null) {
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : No next room defined, exiting.");}
                 this.stationaryMM.setLocation(getCurrentMovementModel().getLastLocation());
                 setCurrentMovementModel(stationaryMM);
                 this.currentMovementMode = EXIT_MODE;
             } else {
                 if (this.mapRouteMM.isReady()) {
                     this.currentRoom = this.nextRoom;
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting random waypoint movement in room: " + this.currentRoom.name);
-                    System.out.println("current coordinate: " + getCurrentMovementModel().getLastLocation().toString());}
                     this.randomWaypointMM.setPolygon(currentRoom.polygon);
                     this.randomWaypointMM.setLocation(getCurrentMovementModel().getLastLocation());
                     setCurrentMovementModel(randomWaypointMM);
@@ -210,8 +202,6 @@ public class LectureTakerMovement extends ExtendedMovementModel {
             }
         } else if (this.currentMovementMode == RANDOM_WALK_IN_CURRENT_ROOM_MODE) {
             if (this.randomWaypointMM.isReady()) {
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting stationary phase in room: " + this.currentRoom.name);}
                 this.stationaryMM.setLocation(this.randomWaypointMM.getLastLocation());
                 setCurrentMovementModel(stationaryMM);
                 this.currentMovementMode = STATIONARY_IN_CURRENT_ROOM_MODE;
@@ -223,8 +213,6 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 } else {
                     this.nextRoom = null;
                 }
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Moving from " + this.currentRoom.name + " to " + (this.nextRoom != null ? this.nextRoom.name : "exit"));}
                 this.mapRouteMM.setLocation(getCurrentMovementModel().getLastLocation());
                 setCurrentMovementModel(mapRouteMM);
                 this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
@@ -239,12 +227,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 }
                 if (this.nextRoom != null && this.nextRoom.name.equals("magistrale")) {
                     this.mapRouteMM.getPath();
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Staying in magistrale, moving to next stop.");
-                    System.out.println("current coordinate: " + getCurrentMovementModel().getLastLocation().toString());}
                 } else {
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Moving from " + this.currentRoom.name + " to " + (this.nextRoom != null ? this.nextRoom.name : "exit"));}
                     this.mapRouteMM.setLocation(getCurrentMovementModel().getLastLocation());
                     setCurrentMovementModel(mapRouteMM);
                     this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
