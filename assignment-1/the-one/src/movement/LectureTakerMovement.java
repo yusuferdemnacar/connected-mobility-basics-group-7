@@ -11,8 +11,6 @@ public class LectureTakerMovement extends ExtendedMovementModel {
 
     // Namespace for LectureTakerMovement specific global settings
     public static final String LECTURE_TAKER_MOVEMENT_NS = "LectureTakerMovement";
-    // Settings keys
-    public static final String LECTURE_NROF_ROOMS_SETTING = "nrofRooms";
 
     public static final String INITIAL_X = "initialX";
     public static final String INITIAL_Y = "initialY";
