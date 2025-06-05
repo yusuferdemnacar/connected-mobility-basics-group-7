@@ -36,7 +36,7 @@ if __name__ == "__main__":
     room_names = Room.get_room_names(map_dir)
 
     rooms = Room.create_rooms(map_dir, room_names)
-    Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10.0)
+    Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10)
     main_schedule = Schedule(rooms)
     main_schedule.populate(nrof_courses)
 
@@ -52,8 +52,8 @@ if __name__ == "__main__":
         group.generate_route_file(data_dir / "group-data", initial_x, initial_y)
         group.generate_room_sequence_file(data_dir / "group-data")
 
-    settings.insert_group_settings(groups)
-    settings.insert_room_settings(rooms)
+    settings.insert_group_settings(groups, data_dir / "group-data")
+    settings.insert_room_settings(rooms, map_dir)
 
     # main_schedule.visualize()
     # Group.visualize(groups)

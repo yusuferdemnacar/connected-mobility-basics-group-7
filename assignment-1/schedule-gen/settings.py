@@ -6,9 +6,9 @@ class Settings:
     def __init__(self, file_path: Path):
         self.file_path = file_path
     
-    def insert_group_settings(self, groups) -> None:
+    def insert_group_settings(self, groups, group_data_dir: Path) -> None:
 
-        insertion_lines = Group.generate_group_settings(groups)
+        insertion_lines = Group.generate_group_settings(groups, group_data_dir)
 
         with open(self.file_path) as file:
             content = file.readlines()
@@ -18,9 +18,9 @@ class Settings:
         with open(self.file_path, "w") as file:
             file.writelines(content)
 
-    def insert_room_settings(self, rooms) -> None:
+    def insert_room_settings(self, rooms, rooms_dir: Path) -> None:
 
-        insertion_lines = Room.generate_room_settings(rooms)
+        insertion_lines = Room.generate_room_settings(rooms, rooms_dir)
 
         with open(self.file_path) as file:
             content = file.readlines()
@@ -52,7 +52,7 @@ class Settings:
                 lines = file.readlines()
                 for line in lines:
                     if line.startswith("MovementModel.worldSize = "):
-                        world_size_x, world_size_y = map(float, line.split('=')[1].strip().split(','))
+                        world_size_x, world_size_y = map(int, line.split('=')[1].strip().split(','))
             return world_size_x, world_size_y
         except FileNotFoundError:
             print(f"File {self.file_path} not found. Please check the path.")
