@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 if __name__ == "__main__":
     
     parser = ArgumentParser(description="Generate schedule and group data for assignment 1.")
-    parser.add_argument("--the-one-dir", type=str, default=Path(__file__).parent.parent, help="Path to the the-one directory. Default is the parent directory of this script.")
+    parser.add_argument("--the-one-dir", type=str, default="assignment-1/the-one", help="Path to the the-one directory. Default is the parent directory of this script.")
     parser.add_argument("--data-dir", type=str, default="assignment-1/the-one/data", help="Path to the data directory of the-one. Default is the-one/data.")
     parser.add_argument("--map-dir", type=str, default="assignment-1/the-one/data/fmi-map", help="Path to the directory containing the room WKT files. Default is the-one/data/fmi-map.")
     parser.add_argument("--corridor-file-path", type=str, default="assignment-1/the-one/data/fmi-map/corridor.wkt", help="Path to the skeleton path WKT file to be used for moving between classrooms. Default is the-one/data/fmi-map/corridor.wkt.")
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     initial_x, initial_y = settings.get_lecture_takers_initial_coordinates()
     world_size_x, world_size_y = settings.get_world_size()
     
-    room_names = Room.get_room_names(map_dir)
+    room_names = Room.get_room_names(map_dir, corridor_file.stem)
 
     rooms = Room.create_rooms(map_dir, room_names)
     Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10)
@@ -53,9 +53,9 @@ if __name__ == "__main__":
     for group in groups:
         group.generate_route_file(data_dir / "group-data", initial_x, initial_y)
         group.generate_room_sequence_file(data_dir / "group-data")
-
+    
     settings.insert_group_settings(groups, data_dir.relative_to(the_one_dir) / "group-data")
     settings.insert_room_settings(rooms, map_dir.relative_to(the_one_dir))
 
     # main_schedule.visualize()
-    # Group.visualize(groups)
+    Group.visualize(groups)

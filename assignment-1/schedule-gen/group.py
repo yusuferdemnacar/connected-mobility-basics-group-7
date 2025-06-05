@@ -6,12 +6,12 @@ import datetime
 from room import Room
 
 class Group:
-    def __init__(self, id: int, nrof_hosts: int = 1, enrollment: list = None):
+    def __init__(self, id: int, nrof_hosts: int = 1, enrollment: list[Course] = None) -> None:
         self.id = id
         self.nrof_hosts = nrof_hosts
         self.enrollment = enrollment
 
-    def generate_route_file(self, file_path: Path, initial_x: float, initial_y: float):
+    def generate_route_file(self, file_path: Path, initial_x: float, initial_y: float) -> None:
         file_path.mkdir(parents=True, exist_ok=True)
         with open(file_path / f"group{self.id}_route.wkt", "w") as file:
             file.write("LINESTRING (")
@@ -20,30 +20,35 @@ class Group:
                 file.write(f"{course.lecture_slot.room.door_inside_x} {course.lecture_slot.room.door_inside_y}, ")
             file.write(f"{initial_x} {initial_y})\n")
 
-    def generate_room_sequence_file(self, file_path: Path):
+    def generate_room_sequence_file(self, file_path: Path) -> None:
         self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
         file_path.mkdir(parents=True, exist_ok=True)
         with open(file_path / f"group{self.id}_room_sequence.txt", "w") as file:
             for course in self.enrollment:
                 file.write(f"{course.lecture_slot.room.name}\n")
 
-    def fill_with_idle_period(self, idle_room: Room):
+    def fill_with_idle_period(self, idle_room: Room) -> None:
         self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
+        has_lecture = any(course.lecture_slot.room.name != "magistrale" for course in self.enrollment)
+        first_course = self.enrollment[0] if self.enrollment else None
+        last_course = self.enrollment[-1] if self.enrollment else None
         for time_slot in range(8, 18, 2):
-            if not any(
-                course.lecture_slot.start_time.hour == time_slot and course.lecture_slot.end_time.hour == time_slot + 2
-                for course in self.enrollment
-            ):
-                special_course = Course("Idle", LectureSlot(
-                    room=idle_room,
-                    start_time=datetime.time(hour=time_slot),
-                    end_time=datetime.time(hour=time_slot + 2)
-                ))
-                self.enrollment.append(special_course)
+            if has_lecture:
+                if time_slot > first_course.lecture_slot.start_time.hour and time_slot < last_course.lecture_slot.start_time.hour:
+                    self.enrollment.append(
+                        Course(
+                            id="Idle",
+                            lecture_slot=LectureSlot(
+                                room=idle_room,
+                                start_time=datetime.time(hour=time_slot, minute=0),
+                                end_time=datetime.time(hour=time_slot + 2, minute=0)
+                            )
+                        )
+                    )
 
     # TODO: make all settings configurable
     @staticmethod
-    def generate_group_settings(groups: list, group_data_dir: Path) -> list:
+    def generate_group_settings(groups: list, group_data_dir: Path) -> list[str]:
         lines = []
         lines.append(f"\nScenario.nrofHostGroups = {len(groups)}\n\n")
         for group in groups:
@@ -63,8 +68,11 @@ class Group:
             lines.append("\n")
         return lines
     
+    # GitHub Copilot was utilized to implement the visualization. 
+    # It is not an essential part of the implementation, it is just for debugging purposes.
+    
     @staticmethod
-    def visualize(groups: list):
+    def visualize(groups: list['Group']) -> None:
         fig, ax = plt.subplots(figsize=(12, 8))
         ax.set_title("Course Schedule for Each Group")
         ax.set_xlim(8, 18)
@@ -104,3 +112,6 @@ class Group:
         plt.grid(True, axis='x')
         plt.tight_layout()
         plt.show()
+
+if __name__ == "__main__":
+    pass

@@ -3,10 +3,10 @@ from room import Room
 from pathlib import Path
 
 class Settings:
-    def __init__(self, file_path: Path):
+    def __init__(self, file_path: Path) -> None:
         self.file_path = file_path
     
-    def insert_group_settings(self, groups, group_data_dir: Path) -> None:
+    def insert_group_settings(self, groups: list[Group], group_data_dir: Path) -> None:
 
         insertion_lines = Group.generate_group_settings(groups, group_data_dir)
 
@@ -18,7 +18,7 @@ class Settings:
         with open(self.file_path, "w") as file:
             file.writelines(content)
 
-    def insert_room_settings(self, rooms, rooms_dir: Path) -> None:
+    def insert_room_settings(self, rooms: dict[str, Room], rooms_dir: Path) -> None:
 
         insertion_lines = Room.generate_room_settings(rooms, rooms_dir)
 
@@ -30,7 +30,7 @@ class Settings:
         with open(self.file_path, "w") as file:
             file.writelines(content)
 
-    def get_lecture_takers_initial_coordinates(self) -> tuple:
+    def get_lecture_takers_initial_coordinates(self) -> tuple[float, float]:
         initial_x, initial_y = 0.0, 0.0
         try:
             with open(self.file_path, 'r') as file:
@@ -45,7 +45,7 @@ class Settings:
             print(f"File {self.file_path} not found. Please check the path.")
             return 0, 0
         
-    def get_world_size(self) -> tuple:
+    def get_world_size(self) -> tuple[int, int]:
         world_size_x, world_size_y = 0.0, 0.0
         try:
             with open(self.file_path, 'r') as file:

@@ -51,7 +51,7 @@ class Schedule:
             course = Course.generate_random_course(course_id, available_lecture_slots)
             self.add_course(course)
 
-    def get_courses_by_time(self) -> dict:
+    def get_courses_by_time(self) -> dict[datetime.time, list[Course]]:
         courses_by_time = {}
         for lecture_slot, course in self.schedule.items():
             if lecture_slot.start_time not in courses_by_time:
@@ -59,7 +59,10 @@ class Schedule:
             courses_by_time[lecture_slot.start_time].append(course)
         return courses_by_time
     
-    def visualize(self):
+    # GitHub Copilot was utilized to implement the visualization. 
+    # It is not an essential part of the implementation, it is just for debugging purposes.
+    
+    def visualize(self) -> None:
         if not self.rooms:
             print("Matplotlib: No rooms to visualize.")
             return
@@ -141,3 +144,6 @@ class Schedule:
 
         plt.tight_layout(rect=[0, 0, 0.85, 1] if course_ids else [0,0,1,1])
         plt.show()
+
+if __name__ == "__main__":
+    pass
