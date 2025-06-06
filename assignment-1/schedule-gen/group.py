@@ -20,10 +20,10 @@ class Group:
                 file.write(f"{course.lecture_slot.room.door_inside_x} {course.lecture_slot.room.door_inside_y}, ")
             file.write(f"{initial_x} {initial_y})\n")
 
-    def generate_room_sequence_file(self, file_path: Path) -> None:
+    def generate_schedule_file(self, file_path: Path) -> None:
         self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
         file_path.mkdir(parents=True, exist_ok=True)
-        with open(file_path / f"group{self.id}_room_sequence.txt", "w") as file:
+        with open(file_path / f"group{self.id}_schedule.txt", "w") as file:
             for course in self.enrollment:
                 file.write(f"{course.lecture_slot.room.name}\n")
 
