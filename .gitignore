@@ -3,3 +3,4 @@ __pycache__/
 group-data/
 rooms.png
 target/
+*pkl
