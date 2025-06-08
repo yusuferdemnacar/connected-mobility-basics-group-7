@@ -23,17 +23,36 @@ MapBasedMovement.rwpInvert = true
 
 ## LectureTakerMovement settings (start)
 
-LectureTakerMovement.initialX = 290
-LectureTakerMovement.initialY = 160
+LectureTakerMovement.initialX = 338.068162250628
+LectureTakerMovement.initialY = 152.671711944027
 LectureTakerMovement.lecturePeriodDuration = 7200
 
 ## LectureTakerMovement settings (end)
 
 ## Room settings (start)
 
-LectureTakerMovement.mi-2.file = data/fmi-map/mi-2.wkt
-LectureTakerMovement.mi-3.file = data/fmi-map/mi-3.wkt
+LectureTakerMovement.5608_EG_038.file = data/fmi-map/5608_EG_038.wkt
+LectureTakerMovement.hs_3.file = data/fmi-map/hs_3.wkt
+LectureTakerMovement.5605_EG_035.file = data/fmi-map/5605_EG_035.wkt
+LectureTakerMovement.5613_EG_009A.file = data/fmi-map/5613_EG_009A.wkt
+LectureTakerMovement.5613_EG_062.file = data/fmi-map/5613_EG_062.wkt
+LectureTakerMovement.hs_2.file = data/fmi-map/hs_2.wkt
+LectureTakerMovement.5608_EG_055.file = data/fmi-map/5608_EG_055.wkt
+LectureTakerMovement.5607_EG_014.file = data/fmi-map/5607_EG_014.wkt
+LectureTakerMovement.5609_EG_038.file = data/fmi-map/5609_EG_038.wkt
+LectureTakerMovement.5611_EG_038.file = data/fmi-map/5611_EG_038.wkt
+LectureTakerMovement.library.file = data/fmi-map/library.wkt
+LectureTakerMovement.5608_EG_059.file = data/fmi-map/5608_EG_059.wkt
+LectureTakerMovement.5613_EG_008.file = data/fmi-map/5613_EG_008.wkt
+LectureTakerMovement.5608_EG_053.file = data/fmi-map/5608_EG_053.wkt
+LectureTakerMovement.hs_1.file = data/fmi-map/hs_1.wkt
 LectureTakerMovement.magistrale.file = data/fmi-map/magistrale.wkt
+LectureTakerMovement.5608_EG_036.file = data/fmi-map/5608_EG_036.wkt
+LectureTakerMovement.5613_EG_036.file = data/fmi-map/5613_EG_036.wkt
+LectureTakerMovement.computerhall.file = data/fmi-map/computerhall.wkt
+LectureTakerMovement.5609_EG_022.file = data/fmi-map/5609_EG_022.wkt
+LectureTakerMovement.5613_EG_010.file = data/fmi-map/5613_EG_010.wkt
+LectureTakerMovement.5613_EG_054.file = data/fmi-map/5613_EG_054.wkt
 
 ## Room settings (end)
 
@@ -48,6 +67,9 @@ Group1.movementModel = LectureTakerMovement
 Group1.routeFile = data/group-data/group1_route.wkt
 Group1.routeType = 1
 Group1.routeFirstStop = 0
+Group1.startTime = 0
+Group1.endTime = 36000
+Group1.waitTime = 600, 1800
 Group1.router = EpidemicRouter
 Group1.bufferSize = 5M
 Group1.speed = 0.5, 1.5
@@ -62,6 +84,9 @@ Group2.movementModel = LectureTakerMovement
 Group2.routeFile = data/group-data/group2_route.wkt
 Group2.routeType = 1
 Group2.routeFirstStop = 0
+Group2.startTime = 0
+Group2.endTime = 36000
+Group2.waitTime = 600, 1800
 Group2.router = EpidemicRouter
 Group2.bufferSize = 5M
 Group2.speed = 0.5, 1.5
@@ -76,6 +101,9 @@ Group3.movementModel = LectureTakerMovement
 Group3.routeFile = data/group-data/group3_route.wkt
 Group3.routeType = 1
 Group3.routeFirstStop = 0
+Group3.startTime = 28800
+Group3.endTime = 36000
+Group3.waitTime = 600, 1800
 Group3.router = EpidemicRouter
 Group3.bufferSize = 5M
 Group3.speed = 0.5, 1.5
@@ -90,6 +118,9 @@ Group4.movementModel = LectureTakerMovement
 Group4.routeFile = data/group-data/group4_route.wkt
 Group4.routeType = 1
 Group4.routeFirstStop = 0
+Group4.startTime = 0
+Group4.endTime = 36000
+Group4.waitTime = 600, 1800
 Group4.router = EpidemicRouter
 Group4.bufferSize = 5M
 Group4.speed = 0.5, 1.5
@@ -104,6 +135,9 @@ Group5.movementModel = LectureTakerMovement
 Group5.routeFile = data/group-data/group5_route.wkt
 Group5.routeType = 1
 Group5.routeFirstStop = 0
+Group5.startTime = 0
+Group5.endTime = 28800
+Group5.waitTime = 600, 1800
 Group5.router = EpidemicRouter
 Group5.bufferSize = 5M
 Group5.speed = 0.5, 1.5
