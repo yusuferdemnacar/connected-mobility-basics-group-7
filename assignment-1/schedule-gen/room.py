@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import Image, ImageDraw # Import Pillow
+from PIL import Image, ImageDraw
 
 class Room:
     def __init__(self, name: str, points: list[tuple[float, float]], door_inside_x: float, door_inside_y: float, door_outside_x: float, door_outside_y: float) -> None:
@@ -58,29 +58,30 @@ class Room:
         return lines
     
     @staticmethod
-    def draw_map(rooms, corridor_file, output_path="rooms.png", image_width=1000, image_height=1000, scale=1.0, line_color="black", line_width=0.5, background_color="white") -> None:
+    def draw_map(rooms, corridor_file, output_path="rooms.png", image_width=1000, image_height=1000, scale=1, wall_color="black", room_color="lightgray", corridor_color="red", line_width=0.5, background_color="white") -> None:
 
-        img = Image.new("RGB", (image_width, image_height), background_color)
+        img = Image.new("RGB", (image_width * scale, image_height * scale), background_color)
         draw = ImageDraw.Draw(img)
 
         for room in rooms.values():
             draw.polygon(
                 [(x * scale, y * scale) for x, y in room.points],
-                outline=line_color,
-                width=int(line_width * scale)
+                outline = wall_color,
+                fill = room_color,
+                width = int(line_width * scale)
             )
 
         with open(corridor_file, 'r') as file:
             for line in file:
                 line = line.lstrip("LINESTRING (").rstrip(")\n")
-                points = [tuple(map(float, point.split())) for point in line.split(", ")]
+                line = line.lstrip("MULTILINESTRING ((").rstrip("))\n")
+                points = [tuple(map(float, point.split())) for point in line.split(",")]
 
                 draw.line(
                     [(x * scale, y * scale) for x, y in points],
-                    fill="green",
-                    width=int(line_width * scale)
+                    fill = corridor_color,
+                    width = int(line_width * scale)
                 )
-
             
         try:
             img.save(output_path)
