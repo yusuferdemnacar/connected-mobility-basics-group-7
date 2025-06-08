@@ -16,8 +16,11 @@ class Group:
         with open(file_path / f"group{self.id}_route.wkt", "w") as file:
             file.write("LINESTRING (")
             self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
-            for course in self.enrollment:
-                file.write(f"{course.lecture_slot.room.door_inside_x} {course.lecture_slot.room.door_inside_y}, ")
+            for i, course in enumerate(self.enrollment):
+                if course.lecture_slot.room.name == "magistrale":
+                    file.write(f"{self.enrollment[i - 1].lecture_slot.room.door_outside_x} {self.enrollment[i - 1].lecture_slot.room.door_outside_y}, ")
+                else:
+                    file.write(f"{course.lecture_slot.room.door_inside_x} {course.lecture_slot.room.door_inside_y}, ")
             file.write(f"{initial_x} {initial_y})\n")
 
     def generate_schedule_file(self, file_path: Path) -> None:
