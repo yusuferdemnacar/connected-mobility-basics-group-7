@@ -159,12 +159,10 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         return initialGlobalEntrance.clone();
     }
 
-    
-
     @Override
     public boolean newOrders() {
         if (this.currentMovementMode == START_MODE) {
-            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_room_sequence.txt");
+            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_schedule.txt");
 
             for (int i = 0; i < roomSequence.size(); i++) {
                 String roomName = roomSequence.get(i);
