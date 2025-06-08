@@ -29,12 +29,12 @@ class Group:
 
     def fill_with_idle_period(self, idle_room: Room) -> None:
         self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
-        has_lecture = any(course.lecture_slot.room.name != "magistrale" for course in self.enrollment)
         first_course = self.enrollment[0] if self.enrollment else None
         last_course = self.enrollment[-1] if self.enrollment else None
         for time_slot in range(8, 18, 2):
-            if has_lecture:
-                if time_slot > first_course.lecture_slot.start_time.hour and time_slot < last_course.lecture_slot.start_time.hour:
+            if ((time_slot > first_course.lecture_slot.start_time.hour) and 
+                (time_slot < last_course.lecture_slot.start_time.hour) and 
+                not any(course.lecture_slot.start_time.hour == time_slot for course in self.enrollment)):
                     self.enrollment.append(
                         Course(
                             id="Idle",
@@ -52,6 +52,9 @@ class Group:
         lines = []
         lines.append(f"\nScenario.nrofHostGroups = {len(groups)}\n\n")
         for group in groups:
+            enrollment_by_time = sorted(group.enrollment, key=lambda x: x.lecture_slot.start_time)
+            start_time = enrollment_by_time[0].lecture_slot.start_time.hour
+            end_time = enrollment_by_time[-1].lecture_slot.end_time.hour
             lines.append(f"# Group{group.id} settings\n")
             lines.append(f"Group{group.id}.groupID = group{group.id}\n")
             lines.append(f"Group{group.id}.nrofHosts = {group.nrof_hosts}\n")
@@ -59,6 +62,9 @@ class Group:
             lines.append(f"Group{group.id}.routeFile = {group_data_dir}/group{group.id}_route.wkt\n")
             lines.append(f"Group{group.id}.routeType = 1\n")
             lines.append(f"Group{group.id}.routeFirstStop = 0\n")
+            lines.append(f"Group{group.id}.startTime = {(start_time - 8) * 60 * 60}\n")
+            lines.append(f"Group{group.id}.endTime = {(end_time - 8) * 60 * 60}\n")
+            lines.append(f"Group{group.id}.waitTime = 600, 1800\n")
             lines.append(f"Group{group.id}.router = EpidemicRouter\n")
             lines.append(f"Group{group.id}.bufferSize = 5M\n")
             lines.append(f"Group{group.id}.speed = 0.5, 1.5\n")
