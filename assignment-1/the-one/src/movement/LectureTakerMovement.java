@@ -6,35 +6,40 @@ import java.util.List;
 
 import core.Coord;
 import core.Settings;
+import core.SimClock;
 
 public class LectureTakerMovement extends ExtendedMovementModel {
 
     // Namespace for LectureTakerMovement specific global settings
     public static final String LECTURE_TAKER_MOVEMENT_NS = "LectureTakerMovement";
-    // Settings keys
-    public static final String LECTURE_NROF_ROOMS_SETTING = "nrofRooms";
 
     public static final String INITIAL_X = "initialX";
     public static final String INITIAL_Y = "initialY";
-    // New settings keys for durations
+    public static final String START_TIME = "startTime";
+    public static final String END_TIME = "endTime";
+    public static final String WAIT_TIME = "waitTime";
     public static final String LECTURE_PERIOD_DURATION_SETTING = "lecturePeriodDuration";
 
+    private Settings groupSettings;
     private Settings ltmSettings;
 
     private ArrayList<String> roomSequence;
     private HashMap<String, Room> rooms = new HashMap<>();
 
-    private Coord initialGlobalEntrance; // Entrance coordinate for the first room
-    private Room currentRoom; // Current room the lecture taker is in
-    private Room nextRoom; // Next room to move to
-    private int lectureSlot;
-
-    private int currentMovementMode; // Current movement mode
+    private Coord initialCoordinates;
+    private double startTime;
+    private double endTime;
+    private double[] waitTime;
+    private Room currentRoom;
+    private Room nextRoom;
+    private int firstLectureTimeSlot;
+    private int currentLectureTimeSlot;
+    private int currentMovementMode;
     private double lecturePeriodDuration;
 
     // Sub-models
     private SwitchableStationaryMovement stationaryMM;
-    private SwitchableProhibitedPolygonRwp randomWaypointMM; // Random waypoint movement model
+    private SwitchableProhibitedPolygonRwp randomWaypointMM;
     private MapRouteMovement mapRouteMM;
 
     private static final int START_MODE = -1;
@@ -79,7 +84,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 while ((line = reader.readLine()) != null) {
                     if (lineNumber < 2) {
                         lineNumber++;
-                        continue; // Skip the first two lines
+                        continue;
                     }
                     String[] parts = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split("\\s+");
                     double x = Double.parseDouble(parts[0]);
@@ -91,11 +96,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 if (!coords.isEmpty()) {
                     coords.add(coords.get(0).clone());
                 }
-            } catch (java.io.IOException e) {
-                System.err.println("Error reading WKT file: " + filePath + ". " + e.getMessage());
-                // Return an empty list or handle the error as appropriate
-                return new ArrayList<>();
-            } catch (Exception e) { // Catch other potential parsing errors if format isn't perfect
+            } catch (Exception e) {
                 System.err.println("Error parsing WKT file: " + filePath + ". " + e.getMessage());
                 return new ArrayList<>();
             }
@@ -111,21 +112,29 @@ public class LectureTakerMovement extends ExtendedMovementModel {
      */
     public LectureTakerMovement(Settings settings) {
         super(settings);
+        this.groupSettings = settings;
+        this.ltmSettings = new Settings(LECTURE_TAKER_MOVEMENT_NS);
 
         this.mapRouteMM = new MapRouteMovement(settings);
         this.randomWaypointMM = new SwitchableProhibitedPolygonRwp(settings);
         this.stationaryMM = new SwitchableStationaryMovement(settings);
 
-        this.lectureSlot = 1;
+        this.startTime = this.groupSettings.getDouble(START_TIME, 0);
+        this.endTime = this.groupSettings.getDouble(END_TIME, Double.MAX_VALUE);
+        this.waitTime = this.groupSettings.getCsvDoubles(WAIT_TIME, 2);
+        this.initialCoordinates = new Coord(
+            this.ltmSettings.getDouble(INITIAL_X, 0),
+            this.ltmSettings.getDouble(INITIAL_Y, 0)
+        );
 
-        Settings ltmSettings = new Settings(LECTURE_TAKER_MOVEMENT_NS);
-        this.ltmSettings = ltmSettings;
+        this.lecturePeriodDuration = this.ltmSettings.getDouble(LECTURE_PERIOD_DURATION_SETTING, 7200);
 
-        double initialX = ltmSettings.getDouble(INITIAL_X, 0);
-        double initialY = ltmSettings.getDouble(INITIAL_Y, 0);
-        this.initialGlobalEntrance = new Coord(initialX, initialY);
+        this.firstLectureTimeSlot = 0;
+        this.currentLectureTimeSlot = 0;
 
-        this.lecturePeriodDuration = ltmSettings.getDouble(LECTURE_PERIOD_DURATION_SETTING, 7200);
+        this.rooms = new HashMap<>();
+        this.currentRoom = null;
+        this.nextRoom = null;
 
         this.currentMovementMode = START_MODE;
 
@@ -138,17 +147,28 @@ public class LectureTakerMovement extends ExtendedMovementModel {
      */
     public LectureTakerMovement(LectureTakerMovement proto) {
         super(proto);
-        this.rooms = new HashMap<>(proto.rooms); // Deep copy of the rooms map
-        this.initialGlobalEntrance = proto.initialGlobalEntrance.clone();
-        this.currentRoom = proto.currentRoom; // Reference copy
-        this.nextRoom = proto.nextRoom; // Reference copy
-        this.lecturePeriodDuration = proto.lecturePeriodDuration;
+        this.groupSettings = proto.groupSettings;
+        this.ltmSettings = proto.ltmSettings;
+
         this.stationaryMM = new SwitchableStationaryMovement(proto.stationaryMM);
         this.randomWaypointMM = new SwitchableProhibitedPolygonRwp(proto.randomWaypointMM);
         this.mapRouteMM = new MapRouteMovement(proto.mapRouteMM);
-        this.lectureSlot = proto.lectureSlot;
-        this.ltmSettings = proto.ltmSettings;
-        this.stationaryMM.setLocation(this.initialGlobalEntrance.clone());
+
+        this.firstLectureTimeSlot = proto.firstLectureTimeSlot;
+        this.currentLectureTimeSlot = proto.currentLectureTimeSlot;
+
+        this.startTime = proto.startTime;
+        this.endTime = proto.endTime;
+        this.waitTime = proto.waitTime;
+        this.initialCoordinates = proto.initialCoordinates;
+        this.lecturePeriodDuration = proto.lecturePeriodDuration;
+
+        this.rooms = new HashMap<>(proto.rooms);
+        
+        this.currentRoom = proto.currentRoom;
+        this.nextRoom = proto.nextRoom;
+        
+        this.stationaryMM.setLocation(this.initialCoordinates);
         setCurrentMovementModel(stationaryMM);
         this.currentMovementMode = proto.currentMovementMode;
     }
@@ -160,17 +180,42 @@ public class LectureTakerMovement extends ExtendedMovementModel {
 
     @Override
     public Coord getInitialLocation() {
-        return initialGlobalEntrance.clone();
+        return initialCoordinates.clone();
+    }
+
+    @Override
+    public boolean isActive() {
+        if (this.currentMovementMode != EXIT_MODE) {            
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public double nextPathAvailable() {
+        if (this.currentMovementMode == START_MODE) {
+            return this.startTime;
+        } else if (this.currentMovementMode == MOVE_TO_NEXT_ROOM_DOOR_MODE){
+            return SimClock.getTime();
+        } else if (this.currentMovementMode == RANDOM_WALK_IN_CURRENT_ROOM_MODE) {
+            return SimClock.getTime();
+        } else if (this.currentMovementMode == STATIONARY_IN_CURRENT_ROOM_MODE) {
+            return this.currentLectureTimeSlot * this.lecturePeriodDuration;
+        } else if (this.currentMovementMode == ROAMING_IN_MAGISTRALE_MODE) {
+            double end_of_lecture_slot = this.currentLectureTimeSlot * this.lecturePeriodDuration;
+            return Math.min(SimClock.getTime() + generateWaitTime(), end_of_lecture_slot);
+        } else if (this.currentMovementMode == EXIT_MODE) {
+            return Double.MAX_VALUE;
+        }
+        return Double.MAX_VALUE;
     }
 
     @Override
     public boolean newOrders() {
         if (this.currentMovementMode == START_MODE) {
-            if (this.getHost().toString().equals("group38")) {
-            System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting stationary in initial location: " + this.initialGlobalEntrance.toString());
-            }
-            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_room_sequence.txt");
-
+            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_schedule.txt");
+            this.firstLectureTimeSlot = (int) (this.startTime / this.lecturePeriodDuration) + 1;
+            this.currentLectureTimeSlot = this.firstLectureTimeSlot;
             for (int i = 0; i < roomSequence.size(); i++) {
                 String roomName = roomSequence.get(i);
                 if (!this.rooms.containsKey(roomName)) {
@@ -182,24 +227,18 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                 this.currentRoom = null;
                 this.nextRoom = rooms.get(roomSequence.get(0));
 
-                this.mapRouteMM.setLocation(initialGlobalEntrance.clone());
+                this.mapRouteMM.setLocation(this.initialCoordinates);
                 setCurrentMovementModel(mapRouteMM);
                 this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
             }
         } else if (this.currentMovementMode == MOVE_TO_NEXT_ROOM_DOOR_MODE) {
-
             if (this.nextRoom == null) {
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : No next room defined, exiting.");}
                 this.stationaryMM.setLocation(getCurrentMovementModel().getLastLocation());
                 setCurrentMovementModel(stationaryMM);
                 this.currentMovementMode = EXIT_MODE;
             } else {
                 if (this.mapRouteMM.isReady()) {
                     this.currentRoom = this.nextRoom;
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting random waypoint movement in room: " + this.currentRoom.name);
-                    System.out.println("current coordinate: " + getCurrentMovementModel().getLastLocation().toString());}
                     this.randomWaypointMM.setPolygon(currentRoom.polygon);
                     this.randomWaypointMM.setLocation(getCurrentMovementModel().getLastLocation());
                     setCurrentMovementModel(randomWaypointMM);
@@ -212,56 +251,44 @@ public class LectureTakerMovement extends ExtendedMovementModel {
             }
         } else if (this.currentMovementMode == RANDOM_WALK_IN_CURRENT_ROOM_MODE) {
             if (this.randomWaypointMM.isReady()) {
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Starting stationary phase in room: " + this.currentRoom.name);}
                 this.stationaryMM.setLocation(this.randomWaypointMM.getLastLocation());
                 setCurrentMovementModel(stationaryMM);
                 this.currentMovementMode = STATIONARY_IN_CURRENT_ROOM_MODE;
             }
         } else if (this.currentMovementMode == STATIONARY_IN_CURRENT_ROOM_MODE) {
-            if (core.SimClock.getTime() >= (this.lectureSlot * this.lecturePeriodDuration)) {
-                if (this.lectureSlot < this.roomSequence.size()) {
-                    this.nextRoom = this.rooms.get(this.roomSequence.get(this.lectureSlot));
-                } else {
-                    this.nextRoom = null;
-                }
-                if (this.getHost().toString().equals("group38")) {
-                System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Moving from " + this.currentRoom.name + " to " + (this.nextRoom != null ? this.nextRoom.name : "exit"));}
-                this.mapRouteMM.setLocation(getCurrentMovementModel().getLastLocation());
-                setCurrentMovementModel(mapRouteMM);
-                this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
-                this.lectureSlot++;
+            this.currentLectureTimeSlot++;
+            if (this.currentLectureTimeSlot - this.firstLectureTimeSlot < this.roomSequence.size()) {
+                this.nextRoom = this.rooms.get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
+            } else {
+                this.nextRoom = null;
             }
+            this.mapRouteMM.setLocation(getCurrentMovementModel().getLastLocation());
+            setCurrentMovementModel(mapRouteMM);
+            this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
         } else if (this.currentMovementMode == ROAMING_IN_MAGISTRALE_MODE) {
-            if (core.SimClock.getTime() >= (this.lectureSlot * this.lecturePeriodDuration)) {
-                if (this.lectureSlot < this.roomSequence.size()) {
-                    this.nextRoom = this.rooms.get(this.roomSequence.get(this.lectureSlot));
+            if (SimClock.getTime() >= (this.currentLectureTimeSlot * this.lecturePeriodDuration)) {
+                this.currentLectureTimeSlot++;
+                if (this.currentLectureTimeSlot - this.firstLectureTimeSlot < this.roomSequence.size()) {
+                    this.nextRoom = this.rooms.get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
                 } else {
                     this.nextRoom = null;
                 }
                 if (this.nextRoom != null && this.nextRoom.name.equals("magistrale")) {
                     this.mapRouteMM.getPath();
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Staying in magistrale, moving to next stop.");
-                    System.out.println("current coordinate: " + getCurrentMovementModel().getLastLocation().toString());}
                 } else {
-                    if (this.getHost().toString().equals("group38")) {
-                    System.out.println(core.SimClock.getTime() + " : " + this.getHost().toString() + " : Moving from " + this.currentRoom.name + " to " + (this.nextRoom != null ? this.nextRoom.name : "exit"));}
                     this.mapRouteMM.setLocation(getCurrentMovementModel().getLastLocation());
                     setCurrentMovementModel(mapRouteMM);
                     this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
                 }
-                this.lectureSlot++;
             }
         } else if (this.currentMovementMode == EXIT_MODE) {
-            System.out.println("LectureTakerMovement: Exiting, no next room defined.");
+            // System.out.println("LectureTakerMovement: Exiting, no next room defined.");
         } else {
             System.out.println("LectureTakerMovement: Invalid movement mode, resetting to MOVE_TO_NEXT_ROOM_DOOR_MODE.");
             this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
             setCurrentMovementModel(mapRouteMM);
-            mapRouteMM.setLocation(initialGlobalEntrance.clone());
+            mapRouteMM.setLocation(this.initialCoordinates);
         }
-
         return true;
 
     }
