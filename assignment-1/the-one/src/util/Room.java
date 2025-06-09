@@ -84,7 +84,19 @@ public class Room {
             return end;
         }
 
-        private boolean lineIntersectsSegment(Line segment) {
+        /*
+         * Line intercept math by Paul Bourke
+         * http://paulbourke.net/geometry/pointlineplane/
+         * 
+         * - Returns the coordinate of the intersection point
+         * - Returns FALSE if the lines don't intersect
+         * 
+         * Coordinates x1, y1, x2 and y2 designate the start and end point of the first
+         * line
+         * Coordinates x3, y3, x4 and y4 designate the start and end point of the second
+         * line
+         */
+        private boolean hasIntersectionWithSegment(Line segment) {
             double distance1 = this.getStart().distance(this.getEnd());
             double distance2 = segment.getStart().distance(segment.getEnd());
 
@@ -147,13 +159,13 @@ public class Room {
             last = current;
 
             Line segment = new Line(previousPoint, current);
-            if (line.lineIntersectsSegment(segment)) {
+            if (line.hasIntersectionWithSegment(segment)) {
                 return true;
             }
         }
 
         Line segment = new Line(last, polygon.getFirst());
 
-        return line.lineIntersectsSegment(segment);
+        return line.hasIntersectionWithSegment(segment);
     }
 }

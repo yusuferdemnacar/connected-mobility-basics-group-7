@@ -14,4 +14,5 @@ cd the-one
 
 # list the settings file here
 ./one.sh \
-    ./assignment-1-settings.txt
+    ./assignment-1-settings.txt \
+    ./assignment-1-settings-communications.txt \
