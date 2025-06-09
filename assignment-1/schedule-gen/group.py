@@ -68,12 +68,11 @@ class Group:
             lines.append(f"Group{group.id}.startTime = {(start_time - 8) * 60 * 60}\n")
             lines.append(f"Group{group.id}.endTime = {(end_time - 8) * 60 * 60}\n")
             lines.append(f"Group{group.id}.waitTime = 600, 1800\n")
-            lines.append(f"Group{group.id}.router = EpidemicRouter\n")
-            lines.append(f"Group{group.id}.bufferSize = 5M\n")
+            lines.append(f"Group{group.id}.router = SprayAndWaitRouter\n")
+            lines.append(f"Group{group.id}.msgTtl = 8\n")
             lines.append(f"Group{group.id}.speed = 0.5, 1.5\n")
             lines.append(f"Group{group.id}.nrofInterfaces = 1\n")
-            lines.append(f"Group{group.id}.interface1 = btInterface\n")
-            lines.append(f"Group{group.id}.msgTtl = 300\n")
+            lines.append(f"Group{group.id}.interface1 = bluetoothInterface\n")
             lines.append("\n")
         return lines
     
