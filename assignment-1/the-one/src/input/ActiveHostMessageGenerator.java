@@ -15,6 +15,7 @@ public class ActiveHostMessageGenerator
 		int responseSize = 0; /* zero stands for one way messages */
 		int msgSize;
 		int interval;
+    int pollingInterval = 1;
 		int from;
 		int to;
 
@@ -26,10 +27,10 @@ public class ActiveHostMessageGenerator
 		interval = drawNextEventTimeDiff();
 
 		/* Create event and advance to next event */
-    // Skip if there are no active hosts
+    // Create a dummy event if there are no active hosts
     if (from == -1 || to == -1) {
-      this.nextEventsTime = Double.MAX_VALUE;
-      return new ExternalEvent(Double.MAX_VALUE);
+      this.nextEventsTime += pollingInterval;
+      return new ExternalEvent(this.nextEventsTime);
     }
       
 		MessageCreateEvent mce = new MessageCreateEvent(from, to, this.getID(),
