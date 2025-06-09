@@ -3,6 +3,7 @@
  * Released under GPLv3. See LICENSE.txt for details.
  */
 package core;
+
 import gui.DTNSimGUI;
 
 import java.lang.reflect.Method;
@@ -10,19 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.DTNSimTextUI;
+import util.Room;
 
 /**
  * Simulator's main class
  */
 public class DTNSim {
-	/** If this option ({@value}) is given to program, batch mode and
-	 * Text UI are used*/
+	public static List<Room> allRooms; // TODO: initialize
+	/**
+	 * If this option ({@value}) is given to program, batch mode and
+	 * Text UI are used
+	 */
 	public static final String BATCH_MODE_FLAG = "-b";
 	/** Delimiter for batch mode index range values (colon) */
 	public static final String RANGE_DELIMETER = ":";
 
-	/** Name of the static method that all resettable classes must have
-	 * @see #registerForReset(String) */
+	/**
+	 * Name of the static method that all resettable classes must have
+	 * 
+	 * @see #registerForReset(String)
+	 */
 	public static final String RESET_METHOD_NAME = "reset";
 	/** List of class names that should be reset between batch runs */
 	private static List<Class<?>> resetList = new ArrayList<Class<?>>();
@@ -37,11 +45,12 @@ public class DTNSim {
 	 * {@link Settings#setRunIndex(int)}). Following arguments are the settings
 	 * files for the simulation run (if any). For GUI mode, the number before
 	 * settings files (if given) is the run index to use for that run.
+	 * 
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
 		boolean batchMode = false;
-		int nrofRuns[] = {0,1};
+		int nrofRuns[] = { 0, 1 };
 		String confFiles[];
 		int firstConfIndex = 0;
 		int guiIndex = 0;
@@ -52,15 +61,13 @@ public class DTNSim {
 		if (args.length > 0) {
 			if (args[0].equals(BATCH_MODE_FLAG)) {
 				batchMode = true;
-                if (args.length == 1) {
-                    firstConfIndex = 1;
-                }
-                else {
-                    nrofRuns = parseNrofRuns(args[1]);
-                    firstConfIndex = 2;
-                }
-			}
-			else { /* GUI mode */
+				if (args.length == 1) {
+					firstConfIndex = 1;
+				} else {
+					nrofRuns = parseNrofRuns(args[1]);
+					firstConfIndex = 2;
+				}
+			} else { /* GUI mode */
 				try { /* is there a run index for the GUI mode ? */
 					guiIndex = Integer.parseInt(args[0]);
 					firstConfIndex = 1;
@@ -69,25 +76,23 @@ public class DTNSim {
 				}
 			}
 			confFiles = args;
-		}
-		else {
-			confFiles = new String[] {null};
+		} else {
+			confFiles = new String[] { null };
 		}
 
 		initSettings(confFiles, firstConfIndex);
 
 		if (batchMode) {
 			long startTime = System.currentTimeMillis();
-			for (int i=nrofRuns[0]; i<nrofRuns[1]; i++) {
-				print("Run " + (i+1) + "/" + nrofRuns[1]);
+			for (int i = nrofRuns[0]; i < nrofRuns[1]; i++) {
+				print("Run " + (i + 1) + "/" + nrofRuns[1]);
 				Settings.setRunIndex(i);
 				resetForNextRun();
 				new DTNSimTextUI().start();
 			}
-			double duration = (System.currentTimeMillis() - startTime)/1000.0;
+			double duration = (System.currentTimeMillis() - startTime) / 1000.0;
 			print("---\nAll done in " + String.format("%.2f", duration) + "s");
-		}
-		else {
+		} else {
 			Settings.setRunIndex(guiIndex);
 			new DTNSimGUI().start();
 		}
@@ -95,27 +100,26 @@ public class DTNSim {
 
 	/**
 	 * Initializes Settings
-	 * @param confFiles File name paths where to read additional settings
+	 * 
+	 * @param confFiles  File name paths where to read additional settings
 	 * @param firstIndex Index of the first config file name
 	 */
 	private static void initSettings(String[] confFiles, int firstIndex) {
 		int i = firstIndex;
 
-        if (i >= confFiles.length) {
-            return;
-        }
+		if (i >= confFiles.length) {
+			return;
+		}
 
 		try {
 			Settings.init(confFiles[i]);
-			for (i=firstIndex+1; i<confFiles.length; i++) {
+			for (i = firstIndex + 1; i < confFiles.length; i++) {
 				Settings.addSettings(confFiles[i]);
 			}
-		}
-		catch (SettingsError er) {
+		} catch (SettingsError er) {
 			try {
 				Integer.parseInt(confFiles[i]);
-			}
-			catch (NumberFormatException nfe) {
+			} catch (NumberFormatException nfe) {
 				/* was not a numeric value */
 				System.err.println("Failed to load settings: " + er);
 				System.err.println("Caught at " + er.getStackTrace()[0]);
@@ -137,8 +141,10 @@ public class DTNSim {
 	 * this method. The given class must have a static implementation
 	 * for the resetting method (a method called {@value #RESET_METHOD_NAME}
 	 * without any parameters).
+	 * 
 	 * @param className Full name (i.e., containing the packet path)
-	 * of the class to register. For example: <code>core.SimClock</code>
+	 *                  of the class to register. For example:
+	 *                  <code>core.SimClock</code>
 	 */
 	public static void registerForReset(String className) {
 		Class<?> c = null;
@@ -150,10 +156,9 @@ public class DTNSim {
 					" for resetting; class not found");
 			System.exit(-1);
 
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			System.err.println("Can't register class " + className +
-			" for resetting; class doesn't contain resetting method");
+					" for resetting; class doesn't contain resetting method");
 			System.exit(-1);
 		}
 		resetList.add(c);
@@ -178,19 +183,18 @@ public class DTNSim {
 	/**
 	 * Parses the number of runs, and an optional starting run index, from a
 	 * command line argument
+	 * 
 	 * @param arg The argument to parse
 	 * @return The first and (last_run_index - 1) in an array
 	 */
 	private static int[] parseNrofRuns(String arg) {
-		int val[] = {0,1};
+		int val[] = { 0, 1 };
 		try {
 			if (arg.contains(RANGE_DELIMETER)) {
 				val[0] = Integer.parseInt(arg.substring(0,
 						arg.indexOf(RANGE_DELIMETER))) - 1;
-				val[1] = Integer.parseInt(arg.substring(arg.
-						indexOf(RANGE_DELIMETER) + 1, arg.length()));
-			}
-			else {
+				val[1] = Integer.parseInt(arg.substring(arg.indexOf(RANGE_DELIMETER) + 1, arg.length()));
+			} else {
 				val[0] = 0;
 				val[1] = Integer.parseInt(arg);
 			}
@@ -218,6 +222,7 @@ public class DTNSim {
 
 	/**
 	 * Prints text to stdout
+	 * 
 	 * @param txt Text to print
 	 */
 	private static void print(String txt) {
