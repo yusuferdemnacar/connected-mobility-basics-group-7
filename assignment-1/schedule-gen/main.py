@@ -57,7 +57,7 @@ if __name__ == "__main__":
     
     settings.insert_group_settings(groups, data_dir.relative_to(the_one_dir) / "group-data")
     settings.insert_room_settings(rooms, map_dir.relative_to(the_one_dir))
-
+    
     with open("schedule-gen/main_schedule.pkl", "wb") as f:
         pickle.dump(main_schedule, f)
 
