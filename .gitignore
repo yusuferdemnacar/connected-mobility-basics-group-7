@@ -4,3 +4,8 @@ group-data/
 rooms.png
 target/
 *pkl
+assignment-1/.idea/*
+assignment-1/out/*
+assignment-1/the-one/.idea/*
+assignment-1/the-one/out/*
+assignment-1/the-one/reports/*.txt
