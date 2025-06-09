@@ -8,6 +8,7 @@ import gui.DTNSimGUI;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ui.DTNSimTextUI;
@@ -81,6 +82,53 @@ public class DTNSim {
 		}
 
 		initSettings(confFiles, firstConfIndex);
+
+		// hardcode rooms for now
+		Room EG_5613_009A = new Room("data/fmi-map/5613_EG_009A.wkt", "5613_EG_009A");
+		Room EG_5608_038 = new Room("data/fmi-map/5608_EG_038.wkt", "5608_EG_038");
+		Room EG_5613_062 = new Room("data/fmi-map/5613_EG_062.wkt", "5613_EG_062");
+		Room EG_5611_038 = new Room("data/fmi-map/5611_EG_038.wkt", "5611_EG_038");
+		Room magistrale = new Room("data/fmi-map/magistrale.wkt", "magistrale");
+		Room EG_5608_059 = new Room("data/fmi-map/5608_EG_059.wkt", "5608_EG_059");
+		Room hs_1 = new Room("data/fmi-map/hs_1.wkt", "hs_1");
+		Room hs_3 = new Room("data/fmi-map/hs_3.wkt", "hs_3");
+		Room EG_5609_022 = new Room("data/fmi-map/5609_EG_022.wkt", "5609_EG_022");
+		Room computerhall = new Room("data/fmi-map/computerhall.wkt", "computerhall");
+		Room hs_2 = new Room("data/fmi-map/hs_2.wkt", "hs_2");
+		Room EG_5613_010 = new Room("data/fmi-map/5613_EG_010.wkt", "5613_EG_010");
+		Room EG_5607_014 = new Room("data/fmi-map/5607_EG_014.wkt", "5607_EG_014");
+		Room EG_5613_036 = new Room("data/fmi-map/5613_EG_036.wkt", "5613_EG_036");
+		Room library = new Room("data/fmi-map/library.wkt", "library");
+		Room EG_5613_008 = new Room("data/fmi-map/5613_EG_008.wkt", "5613_EG_008");
+		Room EG_5608_053 = new Room("data/fmi-map/5608_EG_053.wkt", "5608_EG_053");
+		Room EG_5609_038 = new Room("data/fmi-map/5609_EG_038.wkt", "5609_EG_038");
+		Room EG_5608_055 = new Room("data/fmi-map/5608_EG_055.wkt", "5608_EG_055");
+		Room EG_5613_054 = new Room("data/fmi-map/5613_EG_054.wkt", "5613_EG_054");
+		Room EG_5605_035 = new Room("data/fmi-map/5605_EG_035.wkt", "5605_EG_035");
+		Room EG_5608_036 = new Room("data/fmi-map/5608_EG_036.wkt", "5608_EG_036");
+		DTNSim.allRooms = Arrays.asList(
+				EG_5613_009A,
+				EG_5608_038,
+				EG_5613_062,
+				EG_5611_038,
+				magistrale,
+				EG_5608_059,
+				hs_1,
+				hs_3,
+				EG_5609_022,
+				computerhall,
+				hs_2,
+				EG_5613_010,
+				EG_5607_014,
+				EG_5613_036,
+				library,
+				EG_5613_008,
+				EG_5608_053,
+				EG_5609_038,
+				EG_5608_055,
+				EG_5613_054,
+				EG_5605_035,
+				EG_5608_036);
 
 		if (batchMode) {
 			long startTime = System.currentTimeMillis();
