@@ -128,9 +128,13 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         return initialCoordinates.clone();
     }
 
+    // Kind of asymmetric check
+    // We need to check the exit state rather than end time to give hosts a chance to fully leave the building which can exceed the time of the end of the last lecture (which is the endTime).
+    // We need to check the start time rather than the start state because if the hosts are inactive in the start state, they don't receive new orders, which is the only way to change state.
+
     @Override
     public boolean isActive() {
-        if (this.currentMovementMode != EXIT_MODE) {
+        if (this.currentMovementMode != EXIT_MODE && SimClock.getTime() >= this.startTime) {
             return true;
         }
         return false;
