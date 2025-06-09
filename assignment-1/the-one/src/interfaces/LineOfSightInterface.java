@@ -25,7 +25,7 @@ public class LineOfSightInterface extends DistanceCapacityInterface {
                 && anotherInterface.getHost().isRadioActive()
                 && isWithinRange(anotherInterface)
                 && !isConnected(anotherInterface)
-                && !isFreePath(this.getHost().getLocation(), anotherInterface.getHost().getLocation())
+                && isFreePath(this.getHost().getLocation(), anotherInterface.getHost().getLocation())
                 && (this != anotherInterface)) {
 
             Connection con = new VBRConnection(this.host, this,
