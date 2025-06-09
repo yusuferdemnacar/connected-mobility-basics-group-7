@@ -10,7 +10,7 @@ SprayAndWaitRouter.binaryMode = true
 
 # Message related settings
 Events.nrof = 1
-Events1.class = SingleMessageGenerator
+Events1.class = ActiveHostMessageGenerator
 Events1.interval = 1
 Events1.size = 100
 Events1.hosts = 0,15
