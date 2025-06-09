@@ -28,18 +28,19 @@ class Schedule:
 
     def generate_random_enrollment(self) -> list[Course]:
         selected_courses = []
-        for t in range(self.start_time.hour, self.end_time.hour, self.slot_duration_hours):
-            courses_by_time = self.get_courses_by_time()
-            selected_course = random.choice(list(courses_by_time.get(datetime.time(hour=t))) + [None])
-            selected_courses.append(selected_course)
+        courses_by_time = self.get_courses_by_time()
+        # Continue until there is at least one course in the selected courses
+        # This is the only way of I could think of generating a schedule that is the same as uniformly sampling from all possible non-conflicting non-empty schedules.
+        while not any(selected_courses):
+            for time_slot in courses_by_time.keys():
+                selected_course = random.choice(courses_by_time[time_slot] + [None])
+                selected_courses.append(selected_course)
         return [course for course in selected_courses if course is not None]
 
     def add_course(self, course: 'Course') -> bool:
         target_lecture_slot = course.lecture_slot
-
         if self.schedule[target_lecture_slot] is None:
             self.schedule[target_lecture_slot] = course
-            print(f"Added course{course.id}")
             return True
         else:
             print(f"Slot {target_lecture_slot} is already occupied by course {self.schedule[target_lecture_slot].id}")
@@ -51,15 +52,19 @@ class Schedule:
             course = Course.generate_random_course(course_id, available_lecture_slots)
             self.add_course(course)
 
-    def get_courses_by_time(self) -> dict:
+    def get_courses_by_time(self) -> dict[datetime.time, list[Course]]:
         courses_by_time = {}
         for lecture_slot, course in self.schedule.items():
-            if lecture_slot.start_time not in courses_by_time:
-                courses_by_time[lecture_slot.start_time] = []
-            courses_by_time[lecture_slot.start_time].append(course)
+            if course is not None:
+                if lecture_slot.start_time not in courses_by_time:
+                    courses_by_time[lecture_slot.start_time] = []
+                courses_by_time[lecture_slot.start_time].append(course)
         return courses_by_time
     
-    def visualize(self):
+    # GitHub Copilot was utilized to implement the visualization. 
+    # It is not an essential part of the implementation, it is just for debugging purposes.
+    
+    def visualize(self) -> None:
         if not self.rooms:
             print("Matplotlib: No rooms to visualize.")
             return
@@ -141,3 +146,6 @@ class Schedule:
 
         plt.tight_layout(rect=[0, 0, 0.85, 1] if course_ids else [0,0,1,1])
         plt.show()
+
+if __name__ == "__main__":
+    pass
