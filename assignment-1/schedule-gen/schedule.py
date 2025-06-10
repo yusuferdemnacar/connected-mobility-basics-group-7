@@ -16,7 +16,7 @@ class Schedule:
         self.slot_duration_hours = 2
         
         for room in self.rooms.values():
-            if room.name == "magistrale":
+            if room.name == "magistrale" or room.name == "library" or room.name == "computerhall":
                 continue
             current_hour = self.start_time.hour
             while current_hour + self.slot_duration_hours <= self.end_time.hour:
