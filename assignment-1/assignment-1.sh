@@ -19,10 +19,10 @@ for size in 100 1000; do
             --map-dir the-one/data/fmi-map \
             --corridor-file-path the-one/data/fmi-map/corridor.wkt \
             --settings-file-path the-one/assignment-1-settings-${size}-${run}.txt \
-            --nrof-courses 5 \
-            --nrof-lecture-taker-groups 5 \
-            --nrof-hosts-per-lecture-taker-group 3 \
-            --nrof-self-studier-hosts 5 \
+            --nrof-courses 50 \
+            --nrof-lecture-taker-groups 40 \
+            --nrof-hosts-per-lecture-taker-group 10 \
+            --nrof-self-studier-hosts 100 \
 
         cd the-one
         echo "  Running simulation $run/1 for size $size"
