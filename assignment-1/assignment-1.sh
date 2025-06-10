@@ -28,7 +28,7 @@ for size in 100 1000; do
         echo "  Running simulation $run/1 for size $size"
         
         # Run the simulation
-        ./one.sh \
+        ./one.sh -b 1 \
             "assignment-1-settings-${size}-${run}.txt" \
             "assignment-1-settings-communications-${size}.txt"
         cd -
