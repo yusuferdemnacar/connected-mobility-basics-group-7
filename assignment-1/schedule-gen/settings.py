@@ -9,7 +9,7 @@ class Settings:
     def insert_self_studier_group_settings(self, nrof_hosts: int, initial_x: float, initial_y: float, time_tables_dir: Path, route_files_dir: Path, study_room_assignment_file: Path, start_time: int, end_time: int, group_id: int) -> None:
         insertion_lines = []
         insertion_lines.append("\n")
-        insertion_lines.append(f"Group{group_id}.groupID = selfstudier\n")
+        insertion_lines.append(f"Group{group_id}.groupID = host\n")
         insertion_lines.append(f"Group{group_id}.nrofHosts = {nrof_hosts}\n")
         insertion_lines.append(f"Group{group_id}.movementModel = SelfStudierMovement\n")
         insertion_lines.append(f"Group{group_id}.initialX = {initial_x}\n")

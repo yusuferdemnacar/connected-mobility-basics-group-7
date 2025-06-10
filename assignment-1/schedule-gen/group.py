@@ -59,7 +59,7 @@ class Group:
             start_time = enrollment_by_time[0].lecture_slot.start_time.hour
             end_time = enrollment_by_time[-1].lecture_slot.end_time.hour
             lines.append(f"# Group{group.id} settings\n")
-            lines.append(f"Group{group.id}.groupID = group{group.id}\n")
+            lines.append(f"Group{group.id}.groupID = host\n")
             lines.append(f"Group{group.id}.nrofHosts = {group.nrof_hosts}\n")
             lines.append(f"Group{group.id}.movementModel = LectureTakerMovement\n")
             lines.append(f"Group{group.id}.routeFile = {group_data_dir}/group{group.id}_route.wkt\n")
