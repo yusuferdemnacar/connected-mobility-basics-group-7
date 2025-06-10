@@ -54,9 +54,7 @@ public class LineOfSightInterface extends NetworkInterface {
                 && !isConnected(anotherInterface)
                 && (this != anotherInterface)) {
             // perform costly line of sight check only if all the other conditions hold
-            var hostLocation = this.getHost().getLocation();
-            var otherLocation = anotherInterface.getHost().getLocation();
-            boolean hasClearLineOfSight = isFreePath(hostLocation, otherLocation);
+            boolean hasClearLineOfSight = hasFreeLineOfSight(this.getHost(), anotherInterface.getHost());
 
             if (hasClearLineOfSight) {
                 Connection con = new VBRConnection(this.host, this,
@@ -83,8 +81,9 @@ public class LineOfSightInterface extends NetworkInterface {
 
             // all connections should be up at this stage
             assert con.isUp() : "Connection " + con + " was down!";
-
-            if (!isWithinRange(anotherInterface)) {
+            DTNHost from = this.getHost();
+            DTNHost to = anotherInterface.getHost();
+            if (!isWithinRange(anotherInterface) || !hasFreeLineOfSight(from, to)) {
                 disconnect(con, anotherInterface);
                 connections.remove(i);
             } else {
@@ -101,6 +100,12 @@ public class LineOfSightInterface extends NetworkInterface {
         for (Connection con : getConnections()) {
             con.update();
         }
+    }
+
+    private boolean hasFreeLineOfSight(DTNHost from, DTNHost to) {
+        var hostLocation = from.getLocation();
+        var otherLocation = to.getLocation();
+        return isFreePath(hostLocation, otherLocation);
     }
 
     /**

@@ -50,9 +50,9 @@ public class ActiveHostMessageGenerator
     boolean isActive;
     int hostID;
     var hosts = SimScenario.getInstance().getHosts();
-    var hasActiveHosts = hosts.stream().anyMatch(DTNHost::isMovementActive);
-    if (!hasActiveHosts) {
-      return -1; // no active nodes
+    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() > 2;
+    if (!hasEnoughActiveHosts) {
+       return -1; // no active nodes available for message transfer: we need two active distinct hosts
     }
     do {
       hostID = super.drawHostAddress(hostRange);
@@ -71,9 +71,9 @@ public class ActiveHostMessageGenerator
     boolean isActive;
     int hostID;
     var hosts = SimScenario.getInstance().getHosts();
-    var hasActiveHosts = hosts.stream().anyMatch(DTNHost::isMovementActive);
-    if (!hasActiveHosts) {
-      return -1; // no active nodes
+    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() > 2;
+    if (!hasEnoughActiveHosts) {
+        return -1; // no active nodes available for message transfer: we need two active distinct hosts
     }
     do {
       hostID = super.drawToAddress(hostRange, from);

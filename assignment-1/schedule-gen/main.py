@@ -20,6 +20,7 @@ if __name__ == "__main__":
     parser.add_argument("--nrof-lecture-taker-groups", type=int, default=5, help="Number of lecture taker groups to be generated. Default is 5.")
     parser.add_argument("--nrof-hosts-per-lecture-taker-group", type=int, default=3, help="Number of students per lecture taker group. Default is 3.")
     parser.add_argument("--nrof-self-studier-hosts", type=int, default=5, help="Number of self-studier hosts to be generated. Default is 5.")
+    parser.add_argument("--draw-map", type=bool, default=False, help="Should a map of the rooms be drawn? Default is False.")
 
     args = parser.parse_args()
 
@@ -32,6 +33,7 @@ if __name__ == "__main__":
     nrof_lecture_taker_groups = args.nrof_lecture_taker_groups
     nrof_hosts_per_lecture_taker_group = args.nrof_hosts_per_lecture_taker_group
     nrof_self_studier_hosts = args.nrof_self_studier_hosts
+    draw_map = args.draw_map
 
     # TODO: Handle missing directories
 
@@ -42,7 +44,9 @@ if __name__ == "__main__":
     room_names = Room.get_room_names(map_dir, corridor_file.stem)
 
     rooms = Room.create_rooms(map_dir, room_names)
-    # Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10)
+    
+    if draw_map:
+        Room.draw_map(rooms, corridor_file, output_path=data_dir / "rooms.png", image_width=world_size_x, image_height=world_size_y, scale=10)
     main_schedule = Schedule(rooms)
     main_schedule.populate(nrof_courses)
 
