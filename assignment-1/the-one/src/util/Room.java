@@ -4,6 +4,7 @@ import core.Coord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 // Helper class to store room dimensions
 public class Room {
@@ -22,6 +23,25 @@ public class Room {
         return name;
     }
 
+    // I feel like it's a bit ugly to pass the settings here, but here we are
+    public static String getStudyRoomName(Integer localHostID, String filePath) {
+        HashMap<Integer, String> studyRoomAssignments = new HashMap<>();
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    int hostID = Integer.parseInt(parts[0].trim());
+                    String roomName = parts[1].trim();
+                    studyRoomAssignments.put(hostID, roomName);
+                }
+            }
+        } catch (java.io.IOException e) {
+            System.err.println("Error reading study room assignments file: " + filePath + ". " + e.getMessage());
+        }
+        return studyRoomAssignments.getOrDefault(localHostID, "library");
+    }
+
     public static ArrayList<String> getRoomSequence(String filePath) {
         ArrayList<String> roomSequence = new ArrayList<>();
         try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(filePath))) {
@@ -36,8 +56,8 @@ public class Room {
         return roomSequence;
     }
 
-    public static List<Coord> readPolygon(String filePath) {
-        List<Coord> coords = new ArrayList<>();
+    public static ArrayList<Coord> readPolygon(String filePath) {
+        ArrayList<Coord> coords = new ArrayList<>();
         try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(filePath))) {
             String line;
             int lineNumber = 0;
@@ -56,7 +76,7 @@ public class Room {
             if (!coords.isEmpty()) {
                 coords.add(coords.get(0).clone());
             }
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
             System.err.println("Error parsing WKT file: " + filePath + ". " + e.getMessage());
             return new ArrayList<>();
         }
