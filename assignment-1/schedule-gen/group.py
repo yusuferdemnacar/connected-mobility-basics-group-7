@@ -53,7 +53,7 @@ class Group:
     @staticmethod
     def generate_group_settings(groups: list, group_data_dir: Path) -> list[str]:
         lines = []
-        lines.append(f"\nScenario.nrofHostGroups = {len(groups)}\n\n")
+        lines.append(f"\nScenario.nrofHostGroups = {len(groups) + 1}\n\n")
         for group in groups:
             enrollment_by_time = sorted(group.enrollment, key=lambda x: x.lecture_slot.start_time)
             start_time = enrollment_by_time[0].lecture_slot.start_time.hour
