@@ -2,7 +2,6 @@ package movement; // Or your appropriate package
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import core.Coord;
 import core.Settings;
@@ -172,14 +171,12 @@ public class LectureTakerMovement extends ExtendedMovementModel {
                     Room room = new Room(filePath, roomName);
                     rooms.put(roomName, room);
                 }
-
-                this.currentRoom = null;
-                this.nextRoom = rooms.get(roomSequence.get(0));
-
-                this.mapRouteMM.setLocation(this.initialCoordinates);
-                setCurrentMovementModel(mapRouteMM);
-                this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
             }
+            this.currentRoom = null;
+            this.nextRoom = rooms.get(roomSequence.get(0));
+            this.mapRouteMM.setLocation(this.initialCoordinates);
+            setCurrentMovementModel(mapRouteMM);
+            this.currentMovementMode = MOVE_TO_NEXT_ROOM_DOOR_MODE;
         } else if (this.currentMovementMode == MOVE_TO_NEXT_ROOM_DOOR_MODE) {
             if (this.nextRoom == null) {
                 this.stationaryMM.setLocation(getCurrentMovementModel().getLastLocation());
@@ -207,8 +204,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
         } else if (this.currentMovementMode == STATIONARY_IN_CURRENT_ROOM_MODE) {
             this.currentLectureTimeSlot++;
             if (this.currentLectureTimeSlot - this.firstLectureTimeSlot < this.roomSequence.size()) {
-                this.nextRoom = this.rooms
-                        .get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
+                this.nextRoom = this.rooms.get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
             } else {
                 this.nextRoom = null;
             }
@@ -219,8 +215,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
             if (SimClock.getTime() >= (this.currentLectureTimeSlot * this.lecturePeriodDuration)) {
                 this.currentLectureTimeSlot++;
                 if (this.currentLectureTimeSlot - this.firstLectureTimeSlot < this.roomSequence.size()) {
-                    this.nextRoom = this.rooms
-                            .get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
+                    this.nextRoom = this.rooms.get(this.roomSequence.get(this.currentLectureTimeSlot - this.firstLectureTimeSlot));
                 } else {
                     this.nextRoom = null;
                 }
