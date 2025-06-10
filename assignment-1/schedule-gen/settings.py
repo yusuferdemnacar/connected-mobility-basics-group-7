@@ -5,6 +5,36 @@ from pathlib import Path
 class Settings:
     def __init__(self, file_path: Path) -> None:
         self.file_path = file_path
+
+    def insert_self_studier_group_settings(self, nrof_hosts: int, initial_x: float, initial_y: float, time_tables_dir: Path, route_files_dir: Path, study_room_assignment_file: Path, start_time: int, end_time: int, group_id: int) -> None:
+        insertion_lines = []
+        insertion_lines.append("\n")
+        insertion_lines.append(f"Group{group_id}.groupID = selfstudier\n")
+        insertion_lines.append(f"Group{group_id}.nrofHosts = {nrof_hosts}\n")
+        insertion_lines.append(f"Group{group_id}.movementModel = SelfStudierMovement\n")
+        insertion_lines.append(f"Group{group_id}.initialX = {initial_x}\n")
+        insertion_lines.append(f"Group{group_id}.initialY = {initial_y}\n")
+        insertion_lines.append(f"Group{group_id}.timeTablesDir = {time_tables_dir}\n")
+        insertion_lines.append(f"Group{group_id}.routeFilesDir = {route_files_dir}\n")
+        insertion_lines.append(f"Group{group_id}.studyRoomAssignmentFile = {study_room_assignment_file}\n")
+        insertion_lines.append(f"Group{group_id}.routeType = 1\n")
+        insertion_lines.append(f"Group{group_id}.routeFirstStop = 0\n")
+        insertion_lines.append(f"Group{group_id}.startTime = {start_time}\n")
+        insertion_lines.append(f"Group{group_id}.endTime = {end_time}\n")
+        insertion_lines.append(f"Group{group_id}.waitTime = 600, 1800\n")
+        insertion_lines.append(f"Group{group_id}.router = SprayAndWaitRouter\n")
+        insertion_lines.append(f"Group{group_id}.msgTtl = 8\n")
+        insertion_lines.append(f"Group{group_id}.speed = 0.5, 1.5\n")
+        insertion_lines.append(f"Group{group_id}.nrofInterfaces = 1\n")
+        insertion_lines.append(f"Group{group_id}.interface1 = bluetoothInterface\n")
+        insertion_lines.append("\n")
+        with open(self.file_path, "r") as file:
+            content = file.readlines()
+            start_index = content.index ("## SelfStudier group settings (start)\n") + 1
+            end_index = content.index("## SelfStudier group settings (end)\n")
+            content = content[:start_index] + insertion_lines + content[end_index:]
+        with open(self.file_path, "w") as file:
+            file.writelines(content)
     
     def insert_group_settings(self, groups: list[Group], group_data_dir: Path) -> None:
 
@@ -12,8 +42,8 @@ class Settings:
 
         with open(self.file_path) as file:
             content = file.readlines()
-            start_index = content.index("## Group settings (start)\n") + 1
-            end_index = content.index("## Group settings (end)\n")
+            start_index = content.index("## LectureTaker group settings (start)\n") + 1
+            end_index = content.index("## LectureTaker group settings (end)\n")
             content = content[:start_index] + insertion_lines + content[end_index:]
         with open(self.file_path, "w") as file:
             file.writelines(content)

@@ -5,8 +5,9 @@ python schedule-gen/main.py \
     --corridor-file-path the-one/data/fmi-map/corridor.wkt \
     --settings-file-path the-one/assignment-1-settings.txt \
     --nrof-courses 5 \
-    --nrof-lt-groups 5 \
-    --nrof-hosts-per-lt-group 3
+    --nrof-lecture-taker-groups 5 \
+    --nrof-hosts-per-lecture-taker-group 3 \
+    --nrof-self-studier-hosts 5 \
 
 cd the-one
 
