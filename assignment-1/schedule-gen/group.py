@@ -13,7 +13,7 @@ class Group:
 
     def generate_route_file(self, file_path: Path, initial_x: float, initial_y: float) -> None:
         file_path.mkdir(parents=True, exist_ok=True)
-        with open(file_path / f"group{self.id}_route.wkt", "w") as file:
+        with open(file_path / f"lecturetaker_{self.id}_route.wkt", "w") as file:
             file.write("LINESTRING (")
             self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
             for i, course in enumerate(self.enrollment):
@@ -26,7 +26,7 @@ class Group:
     def generate_schedule_file(self, file_path: Path) -> None:
         self.enrollment.sort(key=lambda x: x.lecture_slot.start_time)
         file_path.mkdir(parents=True, exist_ok=True)
-        with open(file_path / f"group{self.id}_schedule.txt", "w") as file:
+        with open(file_path / f"lecturetaker_{self.id}_schedule.txt", "w") as file:
             for course in self.enrollment:
                 file.write(f"{course.lecture_slot.room.name}\n")
 
@@ -59,10 +59,10 @@ class Group:
             start_time = enrollment_by_time[0].lecture_slot.start_time.hour
             end_time = enrollment_by_time[-1].lecture_slot.end_time.hour
             lines.append(f"# Group{group.id} settings\n")
-            lines.append(f"Group{group.id}.groupID = group{group.id}\n")
+            lines.append(f"Group{group.id}.groupID = lecturetaker_{group.id}_\n")
             lines.append(f"Group{group.id}.nrofHosts = {group.nrof_hosts}\n")
             lines.append(f"Group{group.id}.movementModel = LectureTakerMovement\n")
-            lines.append(f"Group{group.id}.routeFile = {group_data_dir}/group{group.id}_route.wkt\n")
+            lines.append(f"Group{group.id}.routeFile = {group_data_dir}/lecturetaker_{group.id}_route.wkt\n")
             lines.append(f"Group{group.id}.routeType = 1\n")
             lines.append(f"Group{group.id}.routeFirstStop = 0\n")
             lines.append(f"Group{group.id}.startTime = {(start_time - 8) * 60 * 60}\n")

@@ -161,7 +161,7 @@ public class LectureTakerMovement extends ExtendedMovementModel {
     @Override
     public boolean newOrders() {
         if (this.currentMovementMode == START_MODE) {
-            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "_schedule.txt");
+            this.roomSequence = Room.getRoomSequence("data/group-data/" + this.getHost().groupId + "schedule.txt");
             this.firstLectureTimeSlot = (int) (this.startTime / this.lecturePeriodDuration) + 1;
             this.currentLectureTimeSlot = this.firstLectureTimeSlot;
             for (int i = 0; i < roomSequence.size(); i++) {
