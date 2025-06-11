@@ -275,6 +275,113 @@ def plot_node_degree_vs_latency(messages):
                 bbox_inches='tight', dpi=300)
     plt.close()
 
+def plot_bitrate_vs_distance(messages: list[Message], num_bins=20, remove_outliers=True):
+    """Plot bitrate vs distance aggregated across all message sizes using robust statistics"""
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Create DataFrame
+    data = []
+    for msg in messages:
+        if msg.distance > 0 and msg.delivery_time > 0:
+            bitrate = msg.size / msg.delivery_time
+            data.append({
+                'Distance': msg.distance,
+                'Bitrate': bitrate
+            })
+    
+    df = pd.DataFrame(data)
+    
+    # Create distance bins
+    min_dist = df['Distance'].min()
+    max_dist = df['Distance'].max()
+    distance_bins = np.linspace(min_dist, max_dist, num_bins)
+    bin_centers = (distance_bins[:-1] + distance_bins[1:]) / 2
+    
+    median_bitrates = []
+    q1_bitrates = []
+    q3_bitrates = []
+    bin_counts = []
+    
+    # Calculate statistics for each bin
+    for i in range(len(distance_bins)-1):
+        mask = (df['Distance'] >= distance_bins[i]) & (df['Distance'] < distance_bins[i+1])
+        bin_data = df[mask]['Bitrate']
+        
+        if len(bin_data) > 0:
+            if remove_outliers:
+                # Remove outliers using IQR method
+                Q1 = bin_data.quantile(0.25)
+                Q3 = bin_data.quantile(0.75)
+                IQR = Q3 - Q1
+                bin_data = bin_data[
+                    (bin_data >= Q1 - 1.5 * IQR) & 
+                    (bin_data <= Q3 + 1.5 * IQR)
+                ]
+            
+            if len(bin_data) > 0:
+                median_bitrates.append(bin_data.median())
+                q1_bitrates.append(bin_data.quantile(0.25))
+                q3_bitrates.append(bin_data.quantile(0.75))
+                bin_counts.append(len(bin_data))
+            else:
+                median_bitrates.append(np.nan)
+                q1_bitrates.append(np.nan)
+                q3_bitrates.append(np.nan)
+                bin_counts.append(0)
+        else:
+            median_bitrates.append(np.nan)
+            q1_bitrates.append(np.nan)
+            q3_bitrates.append(np.nan)
+            bin_counts.append(0)
+    
+    median_bitrates = np.array(median_bitrates)
+    q1_bitrates = np.array(q1_bitrates)
+    q3_bitrates = np.array(q3_bitrates)
+    
+    # Remove NaN values for plotting
+    valid_mask = ~np.isnan(median_bitrates)
+    valid_centers = bin_centers[valid_mask]
+    valid_medians = median_bitrates[valid_mask]
+    valid_q1 = q1_bitrates[valid_mask]
+    valid_q3 = q3_bitrates[valid_mask]
+    valid_counts = np.array(bin_counts)[valid_mask]
+    
+    # Plot median line
+    ax.plot(valid_centers, valid_medians, 
+            color='blue',
+            linewidth=2.5,
+            label='Median bitrate')
+    
+    # Plot IQR as shaded area
+    ax.fill_between(valid_centers, 
+                   valid_q1, 
+                   valid_q3, 
+                   alpha=0.2,
+                   color='blue',
+                   label='IQR (25th-75th percentile)')
+    
+    # Add sample sizes to plot
+    for x, y, count in zip(valid_centers, valid_medians, valid_counts):
+        ax.text(x, y * 1.1,  # Multiply by 1.1 for log scale positioning
+                f'n={count:,}',
+                ha='center', va='bottom',
+                fontsize=8)
+    
+    # Customize plot
+    ax.set_xlabel('Distance (m)')
+    ax.set_ylabel('Bitrate (bytes/second)')
+    ax.set_title('Bitrate vs Distance (All Message Sizes)')
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+    
+    # Set y-axis to log scale
+    ax.set_yscale('log')
+    
+    plt.tight_layout()
+    plt.savefig('figures/bitrate_vs_distance_aggregate.png', 
+                bbox_inches='tight', dpi=300)
+    plt.close()
+
 def plot_data_quality_analysis(messages: list[Message]):
     data = {
         'Distance': [msg.distance for msg in messages],
@@ -285,9 +392,10 @@ def plot_data_quality_analysis(messages: list[Message]):
     df = pd.DataFrame(data)
     
     plot_hop_counts(df)
-    plot_distance_vs_hopcount_by_size(df, num_bins=20)
+    plot_distance_vs_hopcount_by_size(df)
     plot_latency_frequency_by_size(messages)
     plot_node_degree_vs_latency(messages)
+    plot_bitrate_vs_distance(messages)
 
 def plot_correlation_heatmap(messages: list[Message]):
     data = []
