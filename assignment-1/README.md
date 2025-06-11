@@ -1,6 +1,16 @@
-## Assignment 1 initial presentation
+## Assignment 1 Initial Iresentation
 
 https://docs.google.com/presentation/d/1Vrsz8ayclsPZGKvpSXSVWiV-8wB-makRSAq_sMJGW-M/edit?slide=id.g35a82b90894_0_46#slide=id.g35a82b90894_0_46
+
+## Simulator
+
+The ONE simulator is used for this assignment.
+
+Homepage: [The ONE Homepage](https://akeranen.github.io/the-one/)
+
+Repository: [The ONE GitHub Repository](https://github.com/akeranen/the-one)
+
+Paper: [The ONE Paper](https://www.netlab.tkk.fi/tutkimus/dtn/theone/pub/the_one_simutools.pdf)
 
 ## Setup
 
