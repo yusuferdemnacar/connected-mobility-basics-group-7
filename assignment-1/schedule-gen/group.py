@@ -1,5 +1,4 @@
 from pathlib import Path
-import matplotlib.pyplot as plt
 from course import Course
 from lecture_slot import LectureSlot
 import datetime
@@ -75,51 +74,6 @@ class Group:
             lines.append(f"Group{group.id}.interface1 = bluetoothInterface\n")
             lines.append("\n")
         return lines
-    
-    # GitHub Copilot was utilized to implement the visualization. 
-    # It is not an essential part of the implementation, it is just for debugging purposes.
-    
-    @staticmethod
-    def visualize(groups: list['Group']) -> None:
-        fig, ax = plt.subplots(figsize=(12, 8))
-        ax.set_title("Course Schedule for Each Group")
-        ax.set_xlim(8, 18)
-        ax.set_xlabel("Time Slot (Hour of Day)")
-        ax.set_ylabel("Groups")
-
-        group_keys = list(range(1, len(groups) + 1))
-        
-        ax.set_yticks(range(len(group_keys))) 
-        ax.set_yticklabels(group_keys) 
-        
-        magistrale_color = 'skyblue'
-        other_course_color = 'salmon'
-        
-        legend_elements = [
-            plt.Rectangle((0, 0), 1, 1, color=other_course_color, label='Regular Course'),
-            plt.Rectangle((0, 0), 1, 1, color=magistrale_color, label='Idle')
-        ]
-        
-        for group_idx, group in enumerate(groups):
-            courses = group.enrollment
-            for course in courses:
-                start_time_float = course.lecture_slot.start_time.hour + course.lecture_slot.start_time.minute / 60
-                end_time_float = course.lecture_slot.end_time.hour + course.lecture_slot.end_time.minute / 60
-                duration = end_time_float - start_time_float
-                
-                bar_color = magistrale_color if course.id == "Idle" else other_course_color
-                
-                ax.barh(group_idx, duration, left=start_time_float, height=0.6, color=bar_color, edgecolor='black')
-                
-                text_x = start_time_float + duration / 2
-                text_y = group_idx 
-                ax.text(text_x, text_y, course.lecture_slot.room.name if course.lecture_slot.room.name else "N/A", 
-                        ha='center', va='center', color='black', fontsize=8)
-
-        ax.legend(handles=legend_elements)
-        plt.grid(True, axis='x')
-        plt.tight_layout()
-        plt.show()
 
 if __name__ == "__main__":
     pass

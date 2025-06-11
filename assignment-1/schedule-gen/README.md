@@ -23,8 +23,3 @@ See the help messages for each script for more details.
 ```
 python main.py --help
 ```
-### Visualization
-Visualize the generated overall schedule and the groups' schedules after running the main script.
-```
-python visualize.py --help
-```
