@@ -5,13 +5,21 @@ import util.Room;
 
 import java.util.Collection;
 
-// loosely based on bluetooth 5.0
-public class LineOfSightInterface extends NetworkInterface {
+// loosely based on bluetooth 5.0, but only in direct line of sight
+public class BluetoothInterface extends NetworkInterface {
+    /**
+     * Maximum number of parallel connections allowed -setting id ({@value} ).
+     */
+    public static final String PARALLEL_CONNECTIONS_S = "maximumParallelConnections";
+
+    protected final int maximumParallelConnections;
+
     /**
      * Reads the interface settings from the Settings file
      */
-    public LineOfSightInterface(Settings s) {
+    public BluetoothInterface(Settings s) {
         super(s);
+        maximumParallelConnections = s.getInt(PARALLEL_CONNECTIONS_S);
     }
 
     /**
@@ -19,18 +27,22 @@ public class LineOfSightInterface extends NetworkInterface {
      * 
      * @param ni the copied network interface object
      */
-    public LineOfSightInterface(LineOfSightInterface ni) {
+    public BluetoothInterface(BluetoothInterface ni) {
         super(ni);
+        maximumParallelConnections = ni.maximumParallelConnections;
     }
 
     public NetworkInterface replicate() {
-        return new LineOfSightInterface(this);
+        return new BluetoothInterface(this);
     }
 
     /**
      * Tries to connect this host to another host. The other host must be
      * active, within range of this host, and have a clear line of sight of it for
      * the connection to succeed.
+     * For simplification, assume both hosts are constrained to support a maximum
+     * amount of parallel connections, and that all network interfaces are
+     * Bluetooth interface (as in the simulation this is the case)
      * 
      * @param anotherInterface The interface to connect to
      */
@@ -39,7 +51,8 @@ public class LineOfSightInterface extends NetworkInterface {
                 && anotherInterface.getHost().isRadioActive()
                 && isWithinRange(anotherInterface)
                 && !isConnected(anotherInterface)
-                && (this != anotherInterface)) {
+                && (this != anotherInterface)
+                && (haveConnectionCapacity(anotherInterface))) {
             // perform costly line of sight check only if all the other conditions hold
             boolean hasClearLineOfSight = hasFreeLineOfSight(this.getHost(), anotherInterface.getHost());
 
@@ -49,6 +62,13 @@ public class LineOfSightInterface extends NetworkInterface {
                 connect(con, anotherInterface);
             }
         }
+    }
+
+    private boolean haveConnectionCapacity(NetworkInterface anotherInterface) {
+        // assume the other interface is also BluetoothInterface
+        // as this function is only called unidirectionally
+        return this.connections.size() < this.maximumParallelConnections
+                && anotherInterface.getConnections().size() < this.maximumParallelConnections;
     }
 
     /**
@@ -135,7 +155,7 @@ public class LineOfSightInterface extends NetworkInterface {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "LineOfSightInterface " + super.toString();
+        return "BluetoothInterface " + super.toString();
     }
 
     private boolean isFreePath(Coord thisHostLocation, Coord thatHostLocation) {

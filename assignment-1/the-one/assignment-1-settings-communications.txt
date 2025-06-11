@@ -1,8 +1,9 @@
 ## Interface-specific settings:
 # "Bluetooth" interface for all nodes
-bluetoothInterface.type = LineOfSightInterface
+bluetoothInterface.type = BluetoothInterface
 bluetoothInterface.transmitRange = 120
 bluetoothInterface.transmitSpeed = 0 # Dummy setting required for simulator to properly work
+bluetoothInterface.maximumParallelConnections = 50
 
 SprayAndWaitRouter.nrofCopies = 8
 SprayAndWaitRouter.binaryMode = true
