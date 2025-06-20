@@ -123,7 +123,7 @@ public class BluetoothInterface extends NetworkInterface {
      */
     public void createConnection(NetworkInterface anotherInterface) {
         if (!isConnected(anotherInterface) && (this != anotherInterface)) {
-            Connection con = new VBRConnection(this.host, this,
+            Connection con = new LimitedMTUConnection(this.host, this,
                     anotherInterface.getHost(), anotherInterface);
             connect(con, anotherInterface);
         }
