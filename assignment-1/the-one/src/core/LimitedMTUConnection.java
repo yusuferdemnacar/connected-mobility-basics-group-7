@@ -18,9 +18,8 @@ public class LimitedMTUConnection extends Connection {
 	private int msgsent;
 	private int currentspeed = 0;
 	private double lastUpdate = 0;
-	private final int PATH_MTU = 247; // BLE 4.2+ MTU
+	private static final int PATH_MTU = 247; // BLE 4.2+ MTU
 	private final List<MessageChunk> chunks;
-	// private Message msgOnFly;
 	/**
 	 * Creates a new connection between nodes and sets the connection
 	 * state to "up".
@@ -97,15 +96,7 @@ public class LimitedMTUConnection extends Connection {
 				chunksTaken.add(chunk);
 			}
 		}
-		try {
-			this.chunks.removeAll(chunksTaken);
-		} catch (Exception e) {
-			System.err.println("FUCK");
-		}
-//		var messageHasMoreChunksToDeliver = !this.chunks.isEmpty();
-//		if (!messageHasMoreChunksToDeliver) {
-//			// msg was sent successfully, update chunksPerMessage
-//		}
+		this.chunks.removeAll(chunksTaken);
 		this.msgsent += total;
 		this.lastUpdate = now;
 	}
