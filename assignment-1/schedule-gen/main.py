@@ -52,43 +52,45 @@ if __name__ == "__main__":
 
     groups = []
 
-    for i in range(1, nrof_lecture_taker_groups + 1):
+    has_self_studiers = nrof_self_studier_hosts > 0
+    for i in range(1, 1 + nrof_lecture_taker_groups): # group id needs to start from 1
         group_id = i
         group = Group(group_id, nrof_hosts_per_lecture_taker_group, main_schedule.generate_random_enrollment())
         groups.append(group)
         group.fill_with_idle_period(rooms["magistrale"])
 
+    settings.insert_group_settings(groups, data_dir.relative_to(the_one_dir) / "group-data", has_self_studiers)
+    settings.insert_room_settings(rooms, map_dir.relative_to(the_one_dir))
+    
     for group in groups:
         group.generate_route_file(data_dir / "group-data", initial_x, initial_y)
         group.generate_schedule_file(data_dir / "group-data")
 
-    self_study_rooms = [room for room in rooms.values() if room.name == "library" or room.name == "computerhall"]
+    if nrof_self_studier_hosts:
+        self_study_rooms = [room for room in rooms.values() if room.name == "library" or room.name == "computerhall"]
+        
+        study_plans = [StudyPlan.random_study_plan(self_study_rooms) for _ in range(nrof_self_studier_hosts)]
+        self_study_start_time = min(study_plan.start_time for study_plan in study_plans)
+        self_study_end_time = max(study_plan.end_time for study_plan in study_plans)
 
-    study_plans = [StudyPlan.random_study_plan(self_study_rooms) for _ in range(nrof_self_studier_hosts)]
-    self_study_start_time = min(study_plan.start_time for study_plan in study_plans)
-    self_study_end_time = max(study_plan.end_time for study_plan in study_plans)
+        self_study_start_time_seconds = self_study_start_time.hour * 3600 + self_study_start_time.minute * 60 - 8 * 3600
+        self_study_end_time_seconds = self_study_end_time.hour * 3600 + self_study_end_time.minute * 60 - 8 * 3600
 
-    self_study_start_time_seconds = self_study_start_time.hour * 3600 + self_study_start_time.minute * 60 - 8 * 3600
-    self_study_end_time_seconds = self_study_end_time.hour * 3600 + self_study_end_time.minute * 60 - 8 * 3600
+        for i, study_plan in enumerate(study_plans):
+            study_plan.generate_route_file(data_dir / "group-data" / "self-studier" / "routes" / f"self_studier_{i + 1}_route.wkt", initial_x, initial_y)
+            study_plan.generate_timetable_file(data_dir / "group-data" / "self-studier" / "time-tables" / f"self_studier_{i + 1}_timetable.txt")
 
-    for i, study_plan in enumerate(study_plans):
-        study_plan.generate_route_file(data_dir / "group-data" / "self-studier" / "routes" / f"self_studier_{i + 1}_route.wkt", initial_x, initial_y)
-        study_plan.generate_timetable_file(data_dir / "group-data" / "self-studier" / "time-tables" / f"self_studier_{i + 1}_timetable.txt")
-
-    StudyPlan.generate_study_room_assignment_file(study_plans, data_dir / "group-data" / "self-studier" / "study-room-assignment.txt")
-    
-    settings.insert_group_settings(groups, data_dir.relative_to(the_one_dir) / "group-data")
-    settings.insert_room_settings(rooms, map_dir.relative_to(the_one_dir))
-    self_studier_time_tables_dir = data_dir / "group-data" / "self-studier" / "time-tables"
-    self_studier_routes_dir = data_dir / "group-data" / "self-studier" / "routes"
-    self_studier_study_room_assignment_file = data_dir / "group-data" / "self-studier" / "study-room-assignment.txt"
-    settings.insert_self_studier_group_settings(nrof_self_studier_hosts, initial_x, initial_y, self_studier_time_tables_dir.relative_to(the_one_dir), self_studier_routes_dir.relative_to(the_one_dir), self_studier_study_room_assignment_file.relative_to(the_one_dir), self_study_start_time_seconds, self_study_end_time_seconds, nrof_lecture_taker_groups + 1)
+        StudyPlan.generate_study_room_assignment_file(study_plans, data_dir / "group-data" / "self-studier" / "study-room-assignment.txt")
+        self_studier_time_tables_dir = data_dir / "group-data" / "self-studier" / "time-tables"
+        self_studier_routes_dir = data_dir / "group-data" / "self-studier" / "routes"
+        self_studier_study_room_assignment_file = data_dir / "group-data" / "self-studier" / "study-room-assignment.txt"
+        print(f"Self-studiers: {nrof_self_studier_hosts}")
+        settings.insert_self_studier_group_settings(nrof_self_studier_hosts, initial_x, initial_y, self_studier_time_tables_dir.relative_to(the_one_dir), self_studier_routes_dir.relative_to(the_one_dir), self_studier_study_room_assignment_file.relative_to(the_one_dir), self_study_start_time_seconds, self_study_end_time_seconds, nrof_lecture_taker_groups + 1)
+        with open("schedule-gen/study_plans.pkl", "wb") as f:
+            pickle.dump(study_plans, f)
 
     with open("schedule-gen/main_schedule.pkl", "wb") as f:
         pickle.dump(main_schedule, f)
 
     with open("schedule-gen/groups.pkl", "wb") as f:
         pickle.dump(groups, f)
-
-    with open("schedule-gen/study_plans.pkl", "wb") as f:
-        pickle.dump(study_plans, f)

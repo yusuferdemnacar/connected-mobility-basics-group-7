@@ -50,9 +50,9 @@ class Group:
 
     # TODO: make all settings configurable
     @staticmethod
-    def generate_group_settings(groups: list, group_data_dir: Path) -> list[str]:
+    def generate_group_settings(groups: list, group_data_dir: Path, has_self_studiers = True) -> list[str]:
         lines = []
-        lines.append(f"\nScenario.nrofHostGroups = {len(groups) + 1}\n\n")
+        lines.append(f"\nScenario.nrofHostGroups = {len(groups) + (1 if has_self_studiers else 0)}\n\n")
         for group in groups:
             enrollment_by_time = sorted(group.enrollment, key=lambda x: x.lecture_slot.start_time)
             start_time = enrollment_by_time[0].lecture_slot.start_time.hour

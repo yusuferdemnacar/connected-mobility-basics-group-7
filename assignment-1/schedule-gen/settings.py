@@ -8,6 +8,10 @@ class Settings:
 
     def insert_self_studier_group_settings(self, nrof_hosts: int, initial_x: float, initial_y: float, time_tables_dir: Path, route_files_dir: Path, study_room_assignment_file: Path, start_time: int, end_time: int, group_id: int) -> None:
         insertion_lines = []
+        has_lecture_takers = group_id > 1 # if no lecture takers, we need to insert Scenario.nrofHostGroups = 1
+        if not has_lecture_takers: 
+            insertion_lines.append("\nScenario.nrofHostGroups = 1\n")
+        print(f"has lecture takers: {has_lecture_takers}")
         insertion_lines.append("\n")
         insertion_lines.append(f"Group{group_id}.groupID = selfstudier_\n")
         insertion_lines.append(f"Group{group_id}.nrofHosts = {nrof_hosts}\n")
@@ -28,17 +32,18 @@ class Settings:
         insertion_lines.append(f"Group{group_id}.nrofInterfaces = 1\n")
         insertion_lines.append(f"Group{group_id}.interface1 = bluetoothInterface\n")
         insertion_lines.append("\n")
+        print(f"Filepath: {self.file_path}")
         with open(self.file_path, "r") as file:
             content = file.readlines()
-            start_index = content.index ("## SelfStudier group settings (start)\n") + 1
+            start_index = content.index("## SelfStudier group settings (start)\n") + 1
             end_index = content.index("## SelfStudier group settings (end)\n")
             content = content[:start_index] + insertion_lines + content[end_index:]
         with open(self.file_path, "w") as file:
             file.writelines(content)
     
-    def insert_group_settings(self, groups: list[Group], group_data_dir: Path) -> None:
+    def insert_group_settings(self, groups: list[Group], group_data_dir: Path, has_self_studiers = True) -> None:
 
-        insertion_lines = Group.generate_group_settings(groups, group_data_dir)
+        insertion_lines = Group.generate_group_settings(groups, group_data_dir, has_self_studiers)
 
         with open(self.file_path) as file:
             content = file.readlines()
