@@ -59,113 +59,11 @@ LectureTakerMovement.5605_EG_035.file = data/fmi-map/5605_EG_035.wkt
 LectureTakerMovement.5608_EG_036.file = data/fmi-map/5608_EG_036.wkt
 
 ## Room settings (end)
-
 ## LectureTaker group settings (start)
-
-Scenario.nrofHostGroups = 6
-
-# Group1 settings
-Group1.groupID = group1
-Group1.nrofHosts = 3
-Group1.movementModel = LectureTakerMovement
-Group1.routeFile = data/group-data/group1_route.wkt
-Group1.routeType = 1
-Group1.routeFirstStop = 0
-Group1.startTime = 0
-Group1.endTime = 28800
-Group1.waitTime = 600, 1800
-Group1.router = SprayAndWaitRouter
-Group1.msgTtl = 8
-Group1.speed = 0.5, 1.5
-Group1.nrofInterfaces = 1
-Group1.interface1 = bluetoothInterface
-
-# Group2 settings
-Group2.groupID = group2
-Group2.nrofHosts = 3
-Group2.movementModel = LectureTakerMovement
-Group2.routeFile = data/group-data/group2_route.wkt
-Group2.routeType = 1
-Group2.routeFirstStop = 0
-Group2.startTime = 0
-Group2.endTime = 7200
-Group2.waitTime = 600, 1800
-Group2.router = SprayAndWaitRouter
-Group2.msgTtl = 8
-Group2.speed = 0.5, 1.5
-Group2.nrofInterfaces = 1
-Group2.interface1 = bluetoothInterface
-
-# Group3 settings
-Group3.groupID = group3
-Group3.nrofHosts = 3
-Group3.movementModel = LectureTakerMovement
-Group3.routeFile = data/group-data/group3_route.wkt
-Group3.routeType = 1
-Group3.routeFirstStop = 0
-Group3.startTime = 0
-Group3.endTime = 28800
-Group3.waitTime = 600, 1800
-Group3.router = SprayAndWaitRouter
-Group3.msgTtl = 8
-Group3.speed = 0.5, 1.5
-Group3.nrofInterfaces = 1
-Group3.interface1 = bluetoothInterface
-
-# Group4 settings
-Group4.groupID = group4
-Group4.nrofHosts = 3
-Group4.movementModel = LectureTakerMovement
-Group4.routeFile = data/group-data/group4_route.wkt
-Group4.routeType = 1
-Group4.routeFirstStop = 0
-Group4.startTime = 0
-Group4.endTime = 14400
-Group4.waitTime = 600, 1800
-Group4.router = SprayAndWaitRouter
-Group4.msgTtl = 8
-Group4.speed = 0.5, 1.5
-Group4.nrofInterfaces = 1
-Group4.interface1 = bluetoothInterface
-
-# Group5 settings
-Group5.groupID = group5
-Group5.nrofHosts = 3
-Group5.movementModel = LectureTakerMovement
-Group5.routeFile = data/group-data/group5_route.wkt
-Group5.routeType = 1
-Group5.routeFirstStop = 0
-Group5.startTime = 7200
-Group5.endTime = 14400
-Group5.waitTime = 600, 1800
-Group5.router = SprayAndWaitRouter
-Group5.msgTtl = 8
-Group5.speed = 0.5, 1.5
-Group5.nrofInterfaces = 1
-Group5.interface1 = bluetoothInterface
 
 ## LectureTaker group settings (end)
 
 ## SelfStudier group settings (start)
-
-Group6.groupID = selfstudier
-Group6.nrofHosts = 5
-Group6.movementModel = SelfStudierMovement
-Group6.initialX = 338.068162250628
-Group6.initialY = 152.671711944027
-Group6.timeTablesDir = data/group-data/self-studier/time-tables
-Group6.routeFilesDir = data/group-data/self-studier/routes
-Group6.studyRoomAssignmentFile = data/group-data/self-studier/study-room-assignment.txt
-Group6.routeType = 1
-Group6.routeFirstStop = 0
-Group6.startTime = 4380
-Group6.endTime = 35520
-Group6.waitTime = 600, 1800
-Group6.router = SprayAndWaitRouter
-Group6.msgTtl = 8
-Group6.speed = 0.5, 1.5
-Group6.nrofInterfaces = 1
-Group6.interface1 = bluetoothInterface
 
 ## SelfStudier group settings (end)
 
