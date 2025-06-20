@@ -57,7 +57,7 @@ public class BluetoothInterface extends NetworkInterface {
             boolean hasClearLineOfSight = hasFreeLineOfSight(this.getHost(), anotherInterface.getHost());
 
             if (hasClearLineOfSight) {
-                Connection con = new VBRConnection(this.host, this,
+                Connection con = new LimitedMTUConnection(this.host, this,
                         anotherInterface.getHost(), anotherInterface);
                 connect(con, anotherInterface);
             }
