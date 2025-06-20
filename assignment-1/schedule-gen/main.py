@@ -84,7 +84,6 @@ if __name__ == "__main__":
         self_studier_time_tables_dir = data_dir / "group-data" / "self-studier" / "time-tables"
         self_studier_routes_dir = data_dir / "group-data" / "self-studier" / "routes"
         self_studier_study_room_assignment_file = data_dir / "group-data" / "self-studier" / "study-room-assignment.txt"
-        print(f"Self-studiers: {nrof_self_studier_hosts}")
         settings.insert_self_studier_group_settings(nrof_self_studier_hosts, initial_x, initial_y, self_studier_time_tables_dir.relative_to(the_one_dir), self_studier_routes_dir.relative_to(the_one_dir), self_studier_study_room_assignment_file.relative_to(the_one_dir), self_study_start_time_seconds, self_study_end_time_seconds, nrof_lecture_taker_groups + 1)
         with open("schedule-gen/study_plans.pkl", "wb") as f:
             pickle.dump(study_plans, f)

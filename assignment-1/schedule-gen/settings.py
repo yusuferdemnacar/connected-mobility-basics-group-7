@@ -11,7 +11,6 @@ class Settings:
         has_lecture_takers = group_id > 1 # if no lecture takers, we need to insert Scenario.nrofHostGroups = 1
         if not has_lecture_takers: 
             insertion_lines.append("\nScenario.nrofHostGroups = 1\n")
-        print(f"has lecture takers: {has_lecture_takers}")
         insertion_lines.append("\n")
         insertion_lines.append(f"Group{group_id}.groupID = selfstudier_\n")
         insertion_lines.append(f"Group{group_id}.nrofHosts = {nrof_hosts}\n")
@@ -32,7 +31,6 @@ class Settings:
         insertion_lines.append(f"Group{group_id}.nrofInterfaces = 1\n")
         insertion_lines.append(f"Group{group_id}.interface1 = bluetoothInterface\n")
         insertion_lines.append("\n")
-        print(f"Filepath: {self.file_path}")
         with open(self.file_path, "r") as file:
             content = file.readlines()
             start_index = content.index("## SelfStudier group settings (start)\n") + 1
