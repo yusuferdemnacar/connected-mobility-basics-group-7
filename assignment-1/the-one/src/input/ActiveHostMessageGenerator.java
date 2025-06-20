@@ -12,45 +12,45 @@ public class ActiveHostMessageGenerator
 
   @Override
   public ExternalEvent nextEvent() {
-		int responseSize = 0; /* zero stands for one way messages */
-		int msgSize;
-		int interval;
+    int responseSize = 0; /* zero stands for one way messages */
+    int msgSize;
+    int interval;
     int pollingInterval = 1;
-		int from;
-		int to;
+    int from;
+    int to;
 
-		/* Get two *different* nodes randomly from the host ranges */
-		from = drawHostAddress(this.hostRange);
-		to = drawToAddress(hostRange, from);
+    /* Get two *different* nodes randomly from the host ranges */
+    from = drawHostAddress(this.hostRange);
+    to = drawToAddress(hostRange, from);
 
-		msgSize = drawMessageSize();
-		interval = drawNextEventTimeDiff();
+    msgSize = drawMessageSize();
+    interval = drawNextEventTimeDiff();
 
-		/* Create event and advance to next event */
+    /* Create event and advance to next event */
     // Create a dummy event if there are no active hosts
     if (from == -1 || to == -1) {
       this.nextEventsTime += pollingInterval;
       return new ExternalEvent(this.nextEventsTime);
     }
-      
-		MessageCreateEvent mce = new MessageCreateEvent(from, to, this.getID(),
-				msgSize, responseSize, this.nextEventsTime);
-		this.nextEventsTime += interval;
 
-		if (this.msgTime != null && this.nextEventsTime > this.msgTime[1]) {
-			/* next event would be later than the end time */
-			this.nextEventsTime = Double.MAX_VALUE;
-		}
+    MessageCreateEvent mce = new MessageCreateEvent(from, to, this.getID(),
+        msgSize, responseSize, this.nextEventsTime);
+    this.nextEventsTime += interval;
 
-		return mce;
-	}
+    if (this.msgTime != null && this.nextEventsTime > this.msgTime[1]) {
+      /* next event would be later than the end time */
+      this.nextEventsTime = Double.MAX_VALUE;
+    }
+
+    return mce;
+  }
 
   @Override
   protected int drawHostAddress(int[] hostRange) {
     boolean isActive;
     int hostID;
     var hosts = SimScenario.getInstance().getHosts();
-    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() > 2;
+    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() >= 2;
     if (!hasEnoughActiveHosts) {
        return -1; // no active nodes available for message transfer: we need two active distinct hosts
     }
@@ -71,7 +71,7 @@ public class ActiveHostMessageGenerator
     boolean isActive;
     int hostID;
     var hosts = SimScenario.getInstance().getHosts();
-    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() > 2;
+    var hasEnoughActiveHosts = hosts.stream().filter(DTNHost::isMovementActive).count() >= 2;
     if (!hasEnoughActiveHosts) {
         return -1; // no active nodes available for message transfer: we need two active distinct hosts
     }
