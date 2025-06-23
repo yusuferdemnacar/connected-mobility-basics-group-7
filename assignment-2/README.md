@@ -1,15 +1,13 @@
 ## Assignment 2
 
 ### Pi setup
-#### Install docker:
+
+#### Install system dependencies:
+
 ```
-$ curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh ./get-docker.sh
+$ sudo apt update -y && sudo apt install -y iw tshark
 ```
 
-#### Add user to docker group
-```
-$ sudo groupadd docker; sudo usermod -aG docker $USER; newgrp docker
-```
+### Capturing packets
 
-#### Check that everything is alright
-`$ docker run hello-world` (you should see "Hello from Docker!")
+`$ sudo ./capture.sh -i <capture network interface> [-f <capture filter>] [-o <capture to file>]`
