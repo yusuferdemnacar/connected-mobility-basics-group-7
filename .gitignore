@@ -10,3 +10,5 @@ assignment-1/the-one/.idea/*
 assignment-1/the-one/out/**/*
 assignment-1/the-one/reports/*.txt
 assignment-1/the-one/out/production/*
+.venv/
+venv/
