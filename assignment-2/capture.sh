@@ -48,7 +48,7 @@ ifconfig $INTERFACE up
 
 # Make sure file exists and is writeable
 touch $OUTPUT_FILE
-chmod 666 $OUTPUT_FILE
+chmod o=rw $OUTPUT_FILE
 
 echo "Capturing packets on interface $INTERFACE with filter '$FILTER' to file '$OUTPUT_FILE' - press Ctrl+C to stop capturing"
 
