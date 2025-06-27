@@ -2,11 +2,21 @@ from scapy.all import rdpcap, PPI_DOT11COMMON, Packet, PacketList
 from scapy.layers.dot11 import Dot11
 
 class packet_parser:
-    mac_addresses_random = set()
-    mac_addresses_sorted = set()
+    mac_addresses_random = []
+    mac_addresses_sorted = []
+    mac_addresses_random_unique = set()
+    mac_addresses_sorted_unique = set()
     RSSI = -70
     PACKET_TYPE = 0
     PACKET_SUBTYPE_BEACON = 4
+    number_of_total_packets = 0
+
+    def reset(self):
+        self.mac_addresses_random.clear()
+        self.mac_addresses_sorted.clear()
+        self.mac_addresses_random_unique.clear()
+        self.mac_addresses_sorted_unique.clear()
+        self.number_of_total_packets = 0
 
     def frequency_of_random_mac_addresses(self) -> float:
         sum_of_mac_addresses = self.calculate_sum_of_mac_addresses()
@@ -22,15 +32,18 @@ class packet_parser:
         if sum_of_all_mac_addresses == 0:        
             return 0.0
         return self.mac_addresses_sorted.__len__() / sum_of_all_mac_addresses
+    
     def determent_if_mac_address_is_random(self, mac_address:str) -> bool:
         if mac_address is None or len(mac_address) != 17:
             return False
         first_octet = int(mac_address.split(":")[0], 16)
         is_random:bool = ((first_octet >> 1) & 0x01) == 0x01
         if is_random:
-            self.mac_addresses_random.add(mac_address)
+            self.mac_addresses_random.append(mac_address)
+            self.mac_addresses_random_unique.add(mac_address)
         else:
-            self.mac_addresses_sorted.add(mac_address)
+            self.mac_addresses_sorted_unique.add(mac_address)
+            self.mac_addresses_sorted.append(mac_address)
         return is_random
     
     def filter_RSSI(self, packet:Packet) -> bool:
@@ -39,21 +52,29 @@ class packet_parser:
     def filter_packet_type(self, packet:Packet) -> bool:
         return packet.type == self.PACKET_TYPE and packet.subtype == self.PACKET_SUBTYPE_BEACON
         
-                    
+    def get_number_of_random_mac_addresses(self) -> int:
+        return len(self.mac_addresses_random_unique)
+
+    def get_number_of_sorted_mac_addresses(self) -> int:
+        return len(self.mac_addresses_sorted_unique)    
+
+               
         
     
     def processing_file(self, file_path: str):
+        self.reset()
         packets:PacketList = rdpcap(file_path)
         packetList = packets.filter(lambda p: p.haslayer(Dot11))
         packetList = packetList.filter(lambda p: self.filter_RSSI(p))
         packetList = packetList.filter(lambda p:self.filter_packet_type(p))
+
         for packet in packetList:
             self.determent_if_mac_address_is_random(packet.addr2)
             
             
 
 def main():
-    file_path = ""
+    file_path = "probe.pcap"
     parser = packet_parser()
     parser.processing_file(file_path)
     
