@@ -13,9 +13,9 @@ When installing tshark, let non-sudo users run it by clicking yes.
 ### Capturing packets
 
 We assume the pi currently has three network interfaces: `wlan0` which is connected to the internet, `wlan1` which we will use to capture WiFi probe requests on, and `wlan2` which will be used to span the AP. If your setup differs from that, please modify the `capture.sh` script or your execution of it accordingly.
-`$ sudo ./capture.sh -m <probe|network> [-o <output_file>] [-f <capture filter>] [-i <interface>]`
+`$ sudo ./capture.sh -m <probe|network> [-o <output_file>] [-f <capture filter>] [-i <interface>] [-c <channel>]`
 
-For the first part of this assignment, we used the capture script with the following parameters to capture WiFi probe requests: `$ sudo ./capture.sh -m probe -i wlan1 -o /tmp/capture.pcap`.
+For the first part of this assignment, we used the capture script with the following parameters to capture WiFi probe requests: `$ sudo ./capture.sh -m probe -i wlan1 -o /tmp/capture-1.pcap -c 1`. We used this script with three connected network dongles, and respectively used channels 1, 6, and 11 with each connected dongle/network interface to capture the probe requests.
 For the second part of this assignment, we used the capture script with the following parameters to capture all incoming traffic on the AP: `$ sudo ./capture.sh -m network -i wlan2 -o /tmp/capture.pcap`.
 
 ### AP Mode

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Usage: sudo ./capture.sh -m <probe|network> [-o <output_file>] [-i <interface>] [-f <capture filter>]
+# Usage: sudo ./capture.sh -m <probe|network> [-o <output_file>] [-i <interface>] [-f <capture filter>] [-c <channel>]
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root."
     exit 1
@@ -11,6 +11,7 @@ set -e
 DEFAULT_OUTPUT_FILE="capture.pcap"
 DEFAULT_FILTER="wlan[0]==0x40" # wifi probe requests
 DEFAULT_INTERFACE="wlan1"
+DEFAULT_CHANNEL=1
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -30,8 +31,12 @@ while [[ $# -gt 0 ]]; do
         FILTER="$2"
         shift 2
         ;;
+    -c | --channel)
+        CHANNEL="$2"
+        shift 2
+        ;;
     -h | --help)
-        echo "Usage: sudo $0 -m <probe|network> [-o <output_file>] [-i <interface>] [-f <capture filter>]"
+        echo "Usage: sudo $0 -m <probe|network> [-o <output_file>] [-i <interface>] [-f <capture filter>] [-c <channel>]"
         echo ""
         echo "Modes:"
         echo "  probe   - Capture all WiFi probe requests"
@@ -41,6 +46,7 @@ while [[ $# -gt 0 ]]; do
         echo "  -m, --mode        Capture mode: 'probe' or 'network'"
         echo "  -f, --filter      tshark filter (default: 'wlan[0]==0x40')"
         echo "  -i, --interface   Interface to capture requests on (default: 'wlan1')"
+        echo "  -c, --channel     Channel to capture requests on (default: 1)"
         echo "  -o, --output      Output file (default: 'capture.pcap')"
         echo "  -h, --help        Show this help message"
         exit 0
@@ -56,6 +62,7 @@ done
 OUTPUT_FILE=${OUTPUT_FILE:-$DEFAULT_OUTPUT_FILE}
 INTERFACE=${INTERFACE:-$DEFAULT_INTERFACE}
 FILTER=${FILTER:-$DEFAULT_FILTER}
+CHANNEL=${CHANNEL:-$DEFAULT_CHANNEL}
 
 if [ -z "$MODE" ]; then
     echo "Error: Mode is required (-m option)"
@@ -91,6 +98,12 @@ case "$MODE" in
     # Make sure output file is writeable
     touch $OUTPUT_FILE
     chmod o=rw $OUTPUT_FILE
+
+    # switch to the right channel
+    iwconfig $INTERFACE channel $CHANNEL
+    sleep 1 # wait for the channel switch to take effect
+    echo "$INTERFACE now on channel $CHANNEL"
+
     case "$MODE" in
     "probe")
         capture_probe_requests $FILTER
