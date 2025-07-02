@@ -14,3 +14,4 @@ assignment-1/the-one/out/production/*
 .idea/
 venv/
 .venv/
+.DS_Store
