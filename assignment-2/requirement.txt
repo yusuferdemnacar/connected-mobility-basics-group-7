@@ -1,2 +1,5 @@
 scapy
 pyshark
+matplotlib
+plotly
+nbformat
