@@ -44,7 +44,7 @@ $ sudo systemctl stop dnsmasq
 Add these lines at the end:
 
 ```
-interface wlan2
+interface wlan1
 static ip_address=192.168.4.1/24
 nohook wpa_supplicant
 ```
@@ -61,7 +61,7 @@ Edit the config file:
 Add these lines at the end to configure a static IP address for the AP, and specify the range of IPs leased to the connected stations through DHCP:
 
 ```
-interface=wlan2
+interface=wlan1
 dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
 domain=wlan
 address=/gw.wlan/192.168.4.1
@@ -74,7 +74,7 @@ address=/gw.wlan/192.168.4.1
 Add these lines at the end to configure the name of the AP created by the machine (rememeber to change the SSID and password, and possibly the interface if you want to use a different one):
 
 ```
-interface=wlan2
+interface=wlan1
 driver=nl80211
 ssid=YourNetworkName
 hw_mode=g
@@ -109,9 +109,9 @@ Uncomment or add the line:
 7. Configure NAT and routing between the network interfaces `wlan0` and `wlan2` rules, so that incoming traffic on `wlan2` can reach the internet through `wlan0`:
 
 ```
-$ sudo iptables -A POSTROUTING -t nat -o wlan0 -j MASQUERADE
-$ sudo iptables -A FORWARD -i wlan0 -o wlan2 -m state --state RELATED,ESTABLISHED -j ACCEPT
-$ sudo iptables -A FORWARD -i wlan2 -o wlan0 -j ACCEPT
+$ sudo iptables -A POSTROUTING -t nat -o eth0 -j MASQUERADE
+$ sudo iptables -A FORWARD -i eth0 -o wlan2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+$ sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
 ```
 
 Save the iptables rules so that they persist upon reboot:
