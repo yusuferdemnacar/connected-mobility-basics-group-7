@@ -1,0 +1,5 @@
+Host,Internal_Packets_Sent,Internal_Packets_Received,External_Packets_Sent,External_Packets_Received,Internal_Bytes_Sent,Internal_Bytes_Received,External_Bytes_Sent,External_Bytes_Received
+192.168.4.1,32,41,0,0,6018,3410,0,0
+192.168.4.10,52,24,209,176,4997,4610,65140,116447
+192.168.4.255,0,18,0,0,0,1872,0,0
+192.168.4.4,8,9,181,113,680,1803,48182,55924
