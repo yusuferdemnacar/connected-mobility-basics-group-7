@@ -1,8 +1,8 @@
 import datetime
-import time
-from math import inf
 from argparse import ArgumentParser
 from statistics import median
+from typing import Dict, Tuple
+from pickle import dump
 
 class Hop:
     def __init__(self, ip: str, rtt_times_ms: list[float]) -> None:
@@ -28,13 +28,12 @@ def parse_output(filename: str, target: str) -> list[ProbeMeasurement]:
     fail_count=0
     while i < data_length:
         line = data[i]
-        length_probes = len(probe_measurements)
         is_probe_line = line.startswith("Probe #")
         if not is_probe_line:
             i += 1
             continue 
         probe_id = line.split("#")[1].strip()
-        hop_lines = []
+        hop_lines: list[str] = []
         timestamp_str = data[i+1].strip()
         timestamp_str = " ".join([part for part in timestamp_str.split() if part != "CEST"])
         timestamp = datetime.datetime.strptime(timestamp_str, "%a %b %d %H:%M:%S %Y")
@@ -60,7 +59,7 @@ def parse_output(filename: str, target: str) -> list[ProbeMeasurement]:
                 maximum_ttl_reached = True
             j += 1
 
-        hops = []
+        hops: list[Hop] = []
         for line in hop_lines:
             # 2 172.16.251.4                            33.987 ms    21.974 ms    36.805 ms
             # 1 *                                               *            *            *
@@ -103,13 +102,28 @@ def get_probe_measurements_with_gateway_hop(probe_measurements: list[ProbeMeasur
                 break
     return filtered_measurements
 
-def get_bent_pipe_per_probe(probe_measurements: list[ProbeMeasurement], gateway_ip: str, exclude_before: bool) -> list[dict[(str, int), float]:]:
+def get_bent_pipe_per_probe(probe_measurements: list[ProbeMeasurement], gateway_ip: str, exclude_before: bool) -> Dict[Tuple[str, int], float]:
     """
     Calculates the bent pipe for each probe measurement, which is the time until the gateway hop
     If exclude_before is True, it excludes hops before the gateway hop.
+    returns a dictionary, indexed by a tuple composed of the probeid and timestamp, which returns the bent pipe latency for that timestamp until the gateway hop.
     """
-    bent_pipe_per_probe = []
-    # WIP
+    bent_pipe_per_probe: Dict[Tuple[str, int], float] = {}
+    for probe in probe_measurements:
+        gateway_in_probe = next(filter(lambda hop: hop.ip == gateway_ip, probe.hops), None) is not None
+        if not gateway_in_probe:
+            continue
+
+        total_before_gateway = 0.0
+        for hop in probe.hops:
+            if hop.ip != gateway_ip:
+                total_before_gateway += median(hop.rtt_times_ms)
+            else:
+                gateway_rtt =  median(hop.rtt_times_ms) - (total_before_gateway if exclude_before else 0)
+                bent_pipe_per_probe[(probe.id, probe.timestamp)] = gateway_rtt
+                break
+        
+
     return bent_pipe_per_probe
     
 def main():
@@ -142,7 +156,25 @@ def main():
     print(f"Found {len(successful_measurements)}: {p_successful:.2f}% successful probe measurements. ")
 
     # TODO: look into measurements whose first hop with a meaningful (e.g. more than 10ms) RTT and is not 100.64.0.1: is it only that the GW did not resolve, or is it potentially other GWs?
-    bent_pipe_per_probe = get_bent_pipe_per_probe(probe_measurements, gateway_ip, False)
+    bent_pipe_per_probe_without = get_bent_pipe_per_probe(probe_measurements, gateway_ip, False)
     bent_pipe_per_probe = get_bent_pipe_per_probe(probe_measurements, gateway_ip, True)
+
+    with open("without.pkl", "wb") as f:
+            dump(bent_pipe_per_probe_without, f)
+    with open("with.pkl", "wb") as f:
+            dump(bent_pipe_per_probe, f)
+
+    # probe_id = "1006896"
+    # timestamp_str = "Fri Jul 18 18:22:26 CEST 2025"
+    # timestamp_str = " ".join([part for part in timestamp_str.split() if part != "CEST"])
+    # timestamp = datetime.datetime.strptime(timestamp_str, "%a %b %d %H:%M:%S %Y")
+    # timestamp = int(timestamp.timestamp())
+
+    # without = bent_pipe_per_probe_without[(probe_id, timestamp)]
+    # inc = bent_pipe_per_probe[(probe_id, timestamp)]
+
+    # print(f"Bent pipe excluding hops before gateway hop: {without}ms")
+    # print(f"Bent pipe including hops before gateway hop: {inc}ms")
+
 if __name__ == "__main__":
     main()
