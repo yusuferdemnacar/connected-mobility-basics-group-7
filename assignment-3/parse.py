@@ -17,7 +17,7 @@ class ProbeMeasurement:
         self.hops = hops
         self.reached_target = reached_target
 
-def parse_output(filename: str, target: str) -> list[ProbeMeasurement]:
+def parse_measurements(filename: str, target: str) -> list[ProbeMeasurement]:
     with open(filename, "r") as f:
         data = f.readlines()
 
@@ -25,7 +25,6 @@ def parse_output(filename: str, target: str) -> list[ProbeMeasurement]:
 
     data_length = len(data)
     i=0
-    fail_count=0
     while i < data_length:
         line = data[i]
         is_probe_line = line.startswith("Probe #")
@@ -80,27 +79,26 @@ def parse_output(filename: str, target: str) -> list[ProbeMeasurement]:
                 if rtt_time != "*":
                     rtt_times.append(float(rtt_time))
             hops.append(Hop(ip=hop_ip, rtt_times_ms=rtt_times))
-        is_successfull = target_found or not maximum_ttl_reached # TODO: verify assumption that a successful probe is one that either reaches the target or does not reach the maximum TTL
-        if not is_successfull:
-            fail_count += 1
-        probe = ProbeMeasurement(id=probe_id, timestamp=timestamp, hops=hops, reached_target=is_successfull)
+        is_successful = any(hop.ip == target for hop in hops)
+        probe = ProbeMeasurement(id=probe_id, timestamp=timestamp, hops=hops, reached_target=is_successful)
         probe_measurements.append(probe)
         i = j # jump all the hops belonging to this probe
-
-    print(f"Failed to reach target {target} in {fail_count} probes out of {len(probe_measurements)} total probes.")
+    
     return probe_measurements
 
-def get_probe_measurements_with_gateway_hop(probe_measurements: list[ProbeMeasurement], gateway_ip: str) -> list[ProbeMeasurement]:
+def get_probe_measurements_with_and_without_ip(probe_measurements: list[ProbeMeasurement], ip: str) -> Tuple[list[ProbeMeasurement], list[ProbeMeasurement]]:
     """
-    Filters the probe measurements to only include those that have a hop with the specified gateway IP.
+    Filters the probe measurements to include those that have a hop with the specified IP and those that do not.
+    Returns a tuple of two lists: (with_ip, without_ip).
     """
-    filtered_measurements: list[ProbeMeasurement] = []
+    with_ip: list[ProbeMeasurement] = []
+    without_ip: list[ProbeMeasurement] = []
     for probe in probe_measurements:
-        for hop in probe.hops:
-            if hop.ip == gateway_ip:
-                filtered_measurements.append(probe)
-                break
-    return filtered_measurements
+        if any(hop.ip == ip for hop in probe.hops):
+            with_ip.append(probe)
+        else:
+            without_ip.append(probe)
+    return with_ip, without_ip
 
 def get_bent_pipe_per_probe(probe_measurements: list[ProbeMeasurement], gateway_ip: str, exclude_before: bool) -> Dict[Tuple[str, int], float]:
     """
@@ -144,10 +142,10 @@ def main():
     print(f"Using output file name {output_filename}")
     print(f"Using gateway IP {gateway_ip}")
 
-    probe_measurements = parse_output(output_filename, target)
+    probe_measurements = parse_measurements(output_filename, target)
     print(f"Parsed {len(probe_measurements)} probe measurements")
     
-    measurements_with_gw = get_probe_measurements_with_gateway_hop(probe_measurements, gateway_ip)
+    measurements_with_gw = get_probe_measurements_with_and_without_ip(probe_measurements, gateway_ip)[0]
     successful_measurements = [probe for probe in probe_measurements if probe.reached_target]
     length_with_gateway = len(measurements_with_gw)
     p_gw: float = (length_with_gateway / len(probe_measurements)) * 100
