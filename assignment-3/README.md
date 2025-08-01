@@ -2,7 +2,7 @@
 This assignment for Connected Mobility Basics has us evaluating bent-pipe latency for RIPE Atlas probes connected to Starlink.
 
 ### Install system dependencies
-To run the measurement and reporting scripts `run.sh` and `report.sh`, the package `ripe-atlas` should be installed for CLI usage of the RIPE atlas probes following the installation [guide](https://ripe-atlas-tools.readthedocs.io/en/latest/installation.html#installation). After you install the tool you should authenticate to create measurements, but to get a report from an existing measurement this should not be needed. To authenticate yourself with the CLI follow the [example](https://ripe-atlas-tools.readthedocs.io/en/latest/installation.html#installation) on GitHub.
+To run the measurement and reporting scripts `run.sh` and `report.sh`, the package `ripe-atlas` should be installed for CLI usage of the RIPE atlas probes following the installation [guide](https://ripe-atlas-tools.readthedocs.io/en/latest/installation.html#installation). After you install the tool you should authenticate to create measurements, but to get a report from an existing measurement this should not be needed. To authenticate yourself with the CLI follow the [example](https://ripe-atlas-tools.readthedocs.io/en/latest/use.html) on GitHub.
 
 ### Running
 The `run.sh` script creates a periodic traceroute measurement to a given target, optionally taking in probe IDs. If no probe IDs are passed, default values are used, corresponding to about 20 probes belonging to group 7. The probe list is queried every 15 minutes, executing the traceroute command using IPv4 to the passed target.
