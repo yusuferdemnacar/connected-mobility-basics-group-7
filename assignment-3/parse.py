@@ -64,9 +64,13 @@ def parse_measurements(filename: str, target: str) -> list[ProbeMeasurement]:
             # 1 *                                               *            *            *
             # 2 172.16.251.4                            26.515 ms    21.743 ms            *
 
+            # Skip lines that are not valid hop lines (e.g., error messages)
+            if not line.strip() or not line.strip()[0].isdigit():
+                continue
+
             parts = line.split()
             if len(parts) < 5:
-                raise ValueError(f"Line '{line}' does not have all necessary components to be a hop line: {parts}")
+                continue
             hop_ip = parts[1]
             rtt_times: list[float] = []
 
