@@ -18,3 +18,7 @@ The `parse.py` script calculates the bent pipe latency per probe and timestamp, 
 It takes as optional parameters the measurement output file, the traceroute target, and the gateway IP. For more information, refer to the usage advice of the script (run it with the `-h` flag: `$ python3 parse.py -h`).
 This script parses the report file by iterating per probe and timestamp over the list of hops, and aggregating the hop latency until the gateway is reached. The median hop RTT is subtracted from the gateway median RTT hop, and two files are eventually created: one where all previous hops have been subtracted from the median gateway RTT, and one where those RTTs have not been subtracted. A gateway is reached if a hop with the GW IP address passed in is found; if the gateway decided to not report its IP address, the probe will not be evaluated. The script also reports statistics about the percentage of probes that reached their target, as well as the percentage of probes that contained the gateway.
 A probe is considered to have reached its target if a hop was found matching the passed in target address.
+
+### Analysis
+
+The jupyter notebooks in this directory contain the code that generates the plots and tables used in the report.
