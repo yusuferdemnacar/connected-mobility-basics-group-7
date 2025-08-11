@@ -1,3 +1,7 @@
 dnspython
 scipy
 matplotlib
+requests
+geoip2
+pandas
+jinja2
