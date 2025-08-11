@@ -4,6 +4,7 @@ group-data/
 rooms.png
 target/
 *pkl
+*json
 assignment-1/.idea/*
 assignment-1/out/*
 assignment-1/the-one/.idea/*
@@ -14,6 +15,7 @@ assignment-2/captures/*
 assignment-3/measurements/*
 assignment-3/plots/*
 assignment-3/report/*
+
 .venv/
 venv/
 
