@@ -1,7 +1,7 @@
 import datetime
 from argparse import ArgumentParser
 from statistics import median
-from typing import Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 from pickle import dump
 
 class Hop:
@@ -9,6 +9,15 @@ class Hop:
         self.id = id
         self.ip = ip
         self.rtt_times_ms = rtt_times_ms
+
+        # extension for the geolocation
+        self.geolocation: Optional[Dict[str, Any]] = None
+
+    def add_geolocation(self, geolocation_data: Dict[str, Any]) -> None:
+        self.geolocation = geolocation_data
+
+    def get_geolocation(self) -> Optional[Dict[str, Any]]:
+        return self.geolocation
 
 class ProbeMeasurement:
     def __init__(self, id: str, timestamp: int, hops: list[Hop], reached_target: bool) -> None:
