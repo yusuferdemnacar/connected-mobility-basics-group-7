@@ -22,3 +22,4 @@ A probe is considered to have reached its target if a hop was found matching the
 ### Analysis
 
 The jupyter notebooks in this directory contain the code that generates the plots and tables used in the report.
+To get the database File for the IP address lookup, you need to register for an IPInfo Lite membership at [IPInfo](https://ipinfo.io). Afterwards you can download the file under [IPInfo Download](https://ipinfo.io/dashboard/downloads) as a `.mmdb`-file. And add it to the code. 
